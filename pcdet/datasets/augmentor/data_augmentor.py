@@ -127,3 +127,50 @@ class DataAugmentor(object):
 
             data_dict.pop('gt_boxes_mask')
         return data_dict
+
+class DataAugmentor_liga(DataAugmentor):
+    def __init__(self, root_path, augmentor_configs, class_names, logger=None):
+        self.root_path = root_path
+        self.class_names = class_names
+        self.logger = logger
+
+        self.data_augmentor_queue = []
+        aug_config_list = augmentor_configs if isinstance(augmentor_configs, list) \
+            else augmentor_configs.AUG_CONFIG_LIST
+
+        for cur_cfg in aug_config_list:
+            if not isinstance(augmentor_configs, list):
+                if cur_cfg.NAME in augmentor_configs.DISABLE_AUG_LIST:
+                    continue
+            cur_augmentor = getattr(self, cur_cfg.NAME)(config=cur_cfg)
+            self.data_augmentor_queue.append(cur_augmentor)
+    def forward(self, data_dict):
+        """
+        Args:
+            data_dict:
+                points: (N, 3 + C_in)
+                gt_boxes: optional, (N, 7) [x, y, z, dx, dy, dz, heading]
+                gt_names: optional, (N), string
+                ...
+
+        Returns:
+        """
+        for cur_augmentor in self.data_augmentor_queue:
+            data_dict = cur_augmentor(data_dict=data_dict)
+
+        data_dict['gt_boxes'][:, 6] = common_utils.limit_period(
+            data_dict['gt_boxes'][:, 6], offset=0.5, period=2 * np.pi
+        )
+        # if 'calib' in data_dict:
+        #     data_dict.pop('calib')
+        if 'road_plane' in data_dict:
+            data_dict.pop('road_plane')
+        if 'gt_boxes_mask' in data_dict:
+            gt_boxes_mask = data_dict['gt_boxes_mask']
+            data_dict['gt_boxes'] = data_dict['gt_boxes'][gt_boxes_mask]
+            data_dict['gt_names'] = data_dict['gt_names'][gt_boxes_mask]
+            if 'gt_boxes2d' in data_dict:
+                data_dict['gt_boxes2d'] = data_dict['gt_boxes2d'][gt_boxes_mask]
+
+            data_dict.pop('gt_boxes_mask')
+        return data_dict

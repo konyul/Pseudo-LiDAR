@@ -259,3 +259,29 @@ def compute_fg_mask(gt_boxes2d, shape, downsample_factor=1, device=torch.device(
             fg_mask[b, v1:v2, u1:u2] = True
 
     return fg_mask
+
+
+def W_loss(input, target, off, num_bins, reduction='mean', p=1, scale=1):
+    # B,D,H,W to B,H,W,D
+    input = F.softmax(input, dim=1)
+    off = off.permute(0, 2, 3, 1)
+    input = input.permute(0, 2, 3, 1)
+
+    mask = (target >= 1) * (target <= 81)
+    mask.detach_()
+
+    grid = torch.arange(
+        1, 1+num_bins // scale, device='cuda', requires_grad=False).float()[None, None, None, :]
+    depth = (grid + off) * scale
+    target = target.unsqueeze(3)
+    if p == 1:
+        out = torch.abs(depth[mask] - target[mask])
+    else:
+        out = (depth[mask] - target[mask]) ** p
+
+    loss = torch.sum(input[mask] * out, 1)
+
+    if reduction == 'none':
+        return loss
+    elif reduction == 'mean':
+        return loss.mean()

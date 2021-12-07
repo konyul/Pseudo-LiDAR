@@ -1,0 +1,3 @@
+[submodule "mmdetection_kitti"]
+	path = mmdetection_kitti
+	url = https://github.com/xy-guo/mmdetection_kitti

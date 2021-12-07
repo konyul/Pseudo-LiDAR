@@ -6,7 +6,7 @@ from scipy.spatial import Delaunay
 
 from ..ops.roiaware_pool3d import roiaware_pool3d_utils
 from . import common_utils
-
+from pcdet.utils.calibration_kitti import Calibration
 
 def in_hull(p, hull):
     """
@@ -296,3 +296,34 @@ def boxes3d_nearest_bev_iou(boxes_a, boxes_b):
     boxes_bev_b = boxes3d_lidar_to_aligned_bev_boxes(boxes_b)
 
     return boxes_iou_normal(boxes_bev_a, boxes_bev_b)
+
+def boxes3d_lidar_to_kitti_camera_liga(boxes3d_lidar, calib=None, pseudo_lidar=False, pseduo_cam2_view=False):
+    """
+    :param boxes3d_lidar: (N, 7) [x, y, z, dx, dy, dz, heading], (x, y, z) is the box center
+    :param calib:
+    :return:
+        boxes3d_camera: (N, 7) [x, y, z, l, h, w, r] in rect camera coords
+    """
+    # TODO: will modify original boxes3d_lidar
+    xyz_lidar = boxes3d_lidar[:, 0:3].copy()
+    l, w, h, r = boxes3d_lidar[:, 3:4], boxes3d_lidar[:, 4:5], boxes3d_lidar[:, 5:6], boxes3d_lidar[:, 6:7]
+
+    xyz_lidar[:, 2] -= h.reshape(-1) / 2
+    if not pseudo_lidar:
+        assert calib is not None, "calib can only be None in pseudo_lidar mode"
+        xyz_cam = calib.lidar_to_rect(xyz_lidar)
+    else:
+        # transform xyz from pseudo-lidar to camera view
+        xyz_cam = Calibration.lidar_pseudo_to_rect_liga(xyz_lidar)
+        if pseduo_cam2_view:
+            xyz_cam = xyz_cam - calib.txyz
+    # xyz_cam[:, 1] += h.reshape(-1) / 2
+    r = -r - np.pi / 2
+    return np.concatenate([xyz_cam, l, h, w, r], axis=-1)
+    
+def boxes3d_kitti_camera_to_imagecenters(boxes3d, calib, image_shape=None):
+    centers3d = boxes3d_to_corners3d_kitti_camera(boxes3d).mean(1)
+
+    pts_img, _ = calib.rect_to_img(centers3d)
+
+    return pts_img

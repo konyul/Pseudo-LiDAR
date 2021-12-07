@@ -1,8 +1,9 @@
 import torch
-
+import torch.nn as nn
 from .vfe_template import VFETemplate
-from .image_vfe_modules import ffn, f2v
-
+from .image_vfe_modules import ffn, f2v, p2f
+from ...backbones_3d import vfe
+from pcdet.models.model_utils.basic_block_2d import BasicBlock2D
 
 class ImageVFE(VFETemplate):
     def __init__(self, model_cfg, grid_size, point_cloud_range, depth_downsample_factor, **kwargs):
@@ -11,7 +12,7 @@ class ImageVFE(VFETemplate):
         self.pc_range = point_cloud_range
         self.downsample_factor = depth_downsample_factor
         self.module_topology = [
-            'ffn', 'f2v'
+            'ffn', 'f2v', 'p2f'
         ]
         self.build_modules()
 
@@ -42,6 +43,8 @@ class ImageVFE(VFETemplate):
         Returns:
             f2v_module: nn.Module, Frustum to voxel transformation
         """
+        if self.model_cfg.get('F2V', None) is None:
+            return None
         f2v_module = f2v.__all__[self.model_cfg.F2V.NAME](
             model_cfg=self.model_cfg.F2V,
             grid_size=self.grid_size,
@@ -49,6 +52,22 @@ class ImageVFE(VFETemplate):
             disc_cfg=self.disc_cfg
         )
         return f2v_module
+
+    def build_p2f(self):
+        """
+        Builds pseudolidar to feature transformation
+        Returns:
+            p2f_module: nn.Module, pseudolidar to feature transformation
+        """
+        if self.model_cfg.get('P2F', None) is None:
+            return None
+        p2f_module = p2f.__all__[self.model_cfg.P2F.NAME](
+            model_cfg=self.model_cfg.P2F,
+            grid_size=self.grid_size,
+            pc_range=self.pc_range,
+            disc_cfg=self.disc_cfg
+        )
+        return p2f_module
 
     def get_output_feature_dim(self):
         """
@@ -70,7 +89,10 @@ class ImageVFE(VFETemplate):
                 voxel_features: (B, C, Z, Y, X), Image voxel features
         """
         batch_dict = self.ffn(batch_dict)
-        batch_dict = self.f2v(batch_dict)
+        if self.model_cfg.get('F2V', None) is not None:
+            batch_dict = self.f2v(batch_dict)
+        if self.model_cfg.get('P2F', None) is not None:
+            batch_dict = self.p2f(batch_dict)
         return batch_dict
 
     def get_loss(self):

@@ -1,7 +1,7 @@
 CLASS_NAMES: ['Car', 'Pedestrian', 'Cyclist']
 
 DATA_CONFIG:
-    _BASE_CONFIG_: cfgs/dataset_configs/kitti_dataset.yaml
+    _BASE_CONFIG_: /mnt/sda/kypark/OpenPCDet/tools/cfgs/dataset_configs/kitti_dataset.yaml
     POINT_CLOUD_RANGE: [2, -30.08, -3.0, 46.8, 30.08, 1.0]
     GET_ITEM_LIST: ["images", "depth_maps", "calib_matricies", "gt_boxes2d"]
 
@@ -156,7 +156,7 @@ MODEL:
 
 
 OPTIMIZATION:
-    BATCH_SIZE_PER_GPU: 4
+    BATCH_SIZE_PER_GPU: 2
     NUM_EPOCHS: 80
 
     OPTIMIZER: adam_onecycle

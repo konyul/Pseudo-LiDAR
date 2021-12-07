@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
-
+import torch.nn.functional as F
 
 class BaseBEVBackbone(nn.Module):
     def __init__(self, model_cfg, input_channels):
@@ -24,7 +24,12 @@ class BaseBEVBackbone(nn.Module):
             upsample_strides = num_upsample_filters = []
 
         num_levels = len(layer_nums)
-        c_in_list = [input_channels, *num_filters[:-1]]
+        if self.model_cfg.get('FUSION',None) == 'pillar':
+            c_in_list = [input_channels * 2, *num_filters[:-1]]
+        elif self.model_cfg.get('FUSION',None) == 'occupy':
+            c_in_list = [input_channels + 40, *num_filters[:-1]]
+        else:
+            c_in_list = [input_channels, *num_filters[:-1]]
         self.blocks = nn.ModuleList()
         self.deblocks = nn.ModuleList()
         for idx in range(num_levels):
@@ -78,6 +83,17 @@ class BaseBEVBackbone(nn.Module):
 
         self.num_bev_features = c_in
 
+        if self.model_cfg.get('FUSION',None) == 'pillar':
+            self.fusion = 'pillar'
+            self.monogate = BasicGate(input_channels*2, num_conv = 3)
+            self.bigate = BiGate(input_channels, input_channels)
+        elif self.model_cfg.get('FUSION',None) == 'occupy':
+            self.fusion = 'occupy'
+            self.monogate = BasicGate(input_channels + 40, num_conv = 3)
+            self.bigate = BiGate(input_channels, 40)
+        else:
+            self.fusion = False
+
     def forward(self, data_dict):
         """
         Args:
@@ -89,6 +105,35 @@ class BaseBEVBackbone(nn.Module):
         ups = []
         ret_dict = {}
         x = spatial_features
+        
+        if self.fusion == 'pillar':
+            pillar_spatial_features = data_dict['pillar_spatial_features']
+
+            _fused_spatial_features = torch.cat((spatial_features.clone(), pillar_spatial_features.clone()), dim = 1)
+
+            ## monogate
+            #_fused_spatial_features = self.monogate(fused_spatial_features,fused_spatial_features)
+
+            ## bigate
+            # _spatial_features, _pillar_spatial_features = self.bigate(spatial_features.clone(), pillar_spatial_features.clone())
+            # _fused_spatial_features = torch.cat((_spatial_features, _pillar_spatial_features), dim = 1)
+
+            x = _fused_spatial_features
+            
+        elif self.fusion == 'occupy':
+            depth_spatial_features = data_dict["depth_bev_features"]
+            depth_spatial_features = F.interpolate(depth_spatial_features.clone(), size=spatial_features.shape[-2:], mode='bilinear', align_corners=False)
+            _fused_spatial_features = torch.cat((spatial_features, depth_spatial_features), dim = 1)
+
+            ## monogate
+            #_fused_spatial_features = self.monogate(fused_spatial_features,fused_spatial_features)
+
+            ## bigate
+            # _spatial_features, _pillar_spatial_features = self.bigate(spatial_features.clone(), depth_spatial_features.clone())
+            # _fused_spatial_features = torch.cat((_spatial_features, _pillar_spatial_features), dim = 1)
+
+            x = _fused_spatial_features
+            
         for i in range(len(self.blocks)):
             x = self.blocks[i](x)
 
@@ -110,3 +155,54 @@ class BaseBEVBackbone(nn.Module):
         data_dict['spatial_features_2d'] = x
 
         return data_dict
+
+class BasicGate(nn.Module):
+    def __init__(self, g_channel, num_conv = 3):
+        super(BasicGate, self).__init__()
+        self.g_channel = g_channel
+        self.spatial_basic = []
+        for idx in range(num_conv - 1):
+            self.spatial_basic.append(
+                nn.Conv2d(self.g_channel,
+                          self.g_channel,
+                          kernel_size=3,
+                          stride=1,
+                          padding=1))
+            self.spatial_basic.append(
+                nn.BatchNorm2d(self.g_channel, eps=1e-3, momentum=0.01)
+            )
+            self.spatial_basic.append(
+                nn.ReLU()
+            )
+    
+        self.spatial_basic.append(
+            nn.Conv2d(self.g_channel, 1, kernel_size=3, stride=1, padding=1))
+        self.spatial_basic = nn.Sequential(*self.spatial_basic)
+        self.sigmoid = nn.Sigmoid()
+    def forward(self, feature, attention):
+        attention = self.spatial_basic(attention)
+        attention_map = torch.sigmoid(attention)
+        return feature * attention_map
+
+class BiGate(nn.Module):
+    def __init__(self, g_channel, g_channel_):
+        super(BiGate, self).__init__()
+        self.g_channel = g_channel
+        self.g_channel_ = g_channel_
+        self.b_conv2d = nn.Conv2d(self.g_channel,
+                                  1,
+                                  kernel_size=3,
+                                  stride=1,
+                                  padding=1)
+        self.a_conv2d = nn.Conv2d(self.g_channel_,
+                                  1,
+                                  kernel_size=3,
+                                  stride=1,
+                                  padding=1)
+    def forward(self, feat1, feat2):
+        feat1_map = self.b_conv2d(feat1)
+        feat1_scale = torch.sigmoid(feat1_map)
+        feat2_map = self.a_conv2d(feat2)
+        feat2_scale = torch.sigmoid(feat2_map)
+        return feat1 * feat2_scale, feat2 * feat1_scale
+

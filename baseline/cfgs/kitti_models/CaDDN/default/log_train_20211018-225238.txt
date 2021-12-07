@@ -1,0 +1,1578 @@
+2021-10-18 22:52:38,350   INFO  **********************Start logging**********************
+best epoch = 73
+2021-10-18 22:52:38,351   INFO  CUDA_VISIBLE_DEVICES=0,1
+2021-10-18 22:52:38,351   INFO  total_batch_size: 4
+2021-10-18 22:52:38,351   INFO  cfg_file         ./cfgs/kitti_models/CaDDN.yaml
+2021-10-18 22:52:38,351   INFO  batch_size       2
+2021-10-18 22:52:38,351   INFO  epochs           80
+2021-10-18 22:52:38,351   INFO  workers          8
+2021-10-18 22:52:38,351   INFO  extra_tag        default
+2021-10-18 22:52:38,351   INFO  ckpt             None
+2021-10-18 22:52:38,351   INFO  pretrained_model None
+2021-10-18 22:52:38,351   INFO  launcher         pytorch
+2021-10-18 22:52:38,351   INFO  tcp_port         18888
+2021-10-18 22:52:38,351   INFO  sync_bn          False
+2021-10-18 22:52:38,352   INFO  fix_random_seed  False
+2021-10-18 22:52:38,352   INFO  ckpt_save_interval 1
+2021-10-18 22:52:38,352   INFO  local_rank       0
+2021-10-18 22:52:38,352   INFO  max_ckpt_save_num 30
+2021-10-18 22:52:38,352   INFO  merge_all_iters_to_one_epoch False
+2021-10-18 22:52:38,352   INFO  set_cfgs         None
+2021-10-18 22:52:38,352   INFO  max_waiting_mins 0
+2021-10-18 22:52:38,352   INFO  start_epoch      0
+2021-10-18 22:52:38,352   INFO  save_to_file     False
+2021-10-18 22:52:38,352   INFO  cfg.ROOT_DIR: /mnt/sda/kypark/OpenPCDet
+2021-10-18 22:52:38,352   INFO  cfg.LOCAL_RANK: 0
+2021-10-18 22:52:38,352   INFO  cfg.CLASS_NAMES: ['Car', 'Pedestrian', 'Cyclist']
+2021-10-18 22:52:38,352   INFO  
+cfg.DATA_CONFIG = edict()
+2021-10-18 22:52:38,352   INFO  cfg.DATA_CONFIG.DATASET: KittiDataset
+2021-10-18 22:52:38,352   INFO  cfg.DATA_CONFIG.DATA_PATH: ../data/kitti
+2021-10-18 22:52:38,353   INFO  cfg.DATA_CONFIG.POINT_CLOUD_RANGE: [2, -30.08, -3.0, 46.8, 30.08, 1.0]
+2021-10-18 22:52:38,353   INFO  
+cfg.DATA_CONFIG.DATA_SPLIT = edict()
+2021-10-18 22:52:38,353   INFO  cfg.DATA_CONFIG.DATA_SPLIT.train: train
+2021-10-18 22:52:38,353   INFO  cfg.DATA_CONFIG.DATA_SPLIT.test: val
+2021-10-18 22:52:38,353   INFO  
+cfg.DATA_CONFIG.INFO_PATH = edict()
+2021-10-18 22:52:38,353   INFO  cfg.DATA_CONFIG.INFO_PATH.train: ['kitti_infos_train.pkl']
+2021-10-18 22:52:38,353   INFO  cfg.DATA_CONFIG.INFO_PATH.test: ['kitti_infos_val.pkl']
+2021-10-18 22:52:38,353   INFO  cfg.DATA_CONFIG.GET_ITEM_LIST: ['images', 'depth_maps', 'calib_matricies', 'gt_boxes2d']
+2021-10-18 22:52:38,353   INFO  cfg.DATA_CONFIG.FOV_POINTS_ONLY: True
+2021-10-18 22:52:38,353   INFO  
+cfg.DATA_CONFIG.DATA_AUGMENTOR = edict()
+2021-10-18 22:52:38,353   INFO  cfg.DATA_CONFIG.DATA_AUGMENTOR.DISABLE_AUG_LIST: ['placeholder']
+2021-10-18 22:52:38,353   INFO  cfg.DATA_CONFIG.DATA_AUGMENTOR.AUG_CONFIG_LIST: [{'NAME': 'random_image_flip', 'ALONG_AXIS_LIST': ['horizontal']}]
+2021-10-18 22:52:38,353   INFO  
+cfg.DATA_CONFIG.POINT_FEATURE_ENCODING = edict()
+2021-10-18 22:52:38,353   INFO  cfg.DATA_CONFIG.POINT_FEATURE_ENCODING.encoding_type: absolute_coordinates_encoding
+2021-10-18 22:52:38,353   INFO  cfg.DATA_CONFIG.POINT_FEATURE_ENCODING.used_feature_list: ['x', 'y', 'z', 'intensity']
+2021-10-18 22:52:38,353   INFO  cfg.DATA_CONFIG.POINT_FEATURE_ENCODING.src_feature_list: ['x', 'y', 'z', 'intensity']
+2021-10-18 22:52:38,354   INFO  cfg.DATA_CONFIG.DATA_PROCESSOR: [{'NAME': 'mask_points_and_boxes_outside_range', 'REMOVE_OUTSIDE_BOXES': True}, {'NAME': 'calculate_grid_size', 'VOXEL_SIZE': [0.16, 0.16, 0.16]}, {'NAME': 'downsample_depth_map', 'DOWNSAMPLE_FACTOR': 4}]
+2021-10-18 22:52:38,354   INFO  cfg.DATA_CONFIG._BASE_CONFIG_: cfgs/dataset_configs/kitti_dataset.yaml
+2021-10-18 22:52:38,354   INFO  
+cfg.MODEL = edict()
+2021-10-18 22:52:38,354   INFO  cfg.MODEL.NAME: CaDDN
+2021-10-18 22:52:38,354   INFO  
+cfg.MODEL.VFE = edict()
+2021-10-18 22:52:38,354   INFO  cfg.MODEL.VFE.NAME: ImageVFE
+2021-10-18 22:52:38,354   INFO  
+cfg.MODEL.VFE.FFN = edict()
+2021-10-18 22:52:38,354   INFO  cfg.MODEL.VFE.FFN.NAME: DepthFFN
+2021-10-18 22:52:38,354   INFO  
+cfg.MODEL.VFE.FFN.DDN = edict()
+2021-10-18 22:52:38,354   INFO  cfg.MODEL.VFE.FFN.DDN.NAME: DDNDeepLabV3
+2021-10-18 22:52:38,354   INFO  cfg.MODEL.VFE.FFN.DDN.BACKBONE_NAME: ResNet101
+2021-10-18 22:52:38,354   INFO  
+cfg.MODEL.VFE.FFN.DDN.ARGS = edict()
+2021-10-18 22:52:38,354   INFO  cfg.MODEL.VFE.FFN.DDN.ARGS.feat_extract_layer: layer1
+2021-10-18 22:52:38,354   INFO  cfg.MODEL.VFE.FFN.DDN.ARGS.pretrained_path: ../checkpoints/deeplabv3_resnet101_coco-586e9e4e.pth
+2021-10-18 22:52:38,354   INFO  
+cfg.MODEL.VFE.FFN.CHANNEL_REDUCE = edict()
+2021-10-18 22:52:38,354   INFO  cfg.MODEL.VFE.FFN.CHANNEL_REDUCE.in_channels: 256
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.CHANNEL_REDUCE.out_channels: 64
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.CHANNEL_REDUCE.kernel_size: 1
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.CHANNEL_REDUCE.stride: 1
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.CHANNEL_REDUCE.bias: False
+2021-10-18 22:52:38,355   INFO  
+cfg.MODEL.VFE.FFN.DISCRETIZE = edict()
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.DISCRETIZE.mode: LID
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.DISCRETIZE.num_bins: 80
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.DISCRETIZE.depth_min: 2.0
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.DISCRETIZE.depth_max: 46.8
+2021-10-18 22:52:38,355   INFO  
+cfg.MODEL.VFE.FFN.LOSS = edict()
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.LOSS.NAME: DDNLoss
+2021-10-18 22:52:38,355   INFO  
+cfg.MODEL.VFE.FFN.LOSS.ARGS = edict()
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.LOSS.ARGS.weight: 3.0
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.LOSS.ARGS.alpha: 0.25
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.LOSS.ARGS.gamma: 2.0
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.LOSS.ARGS.fg_weight: 13
+2021-10-18 22:52:38,355   INFO  cfg.MODEL.VFE.FFN.LOSS.ARGS.bg_weight: 1
+2021-10-18 22:52:38,356   INFO  
+cfg.MODEL.VFE.F2V = edict()
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.VFE.F2V.NAME: FrustumToVoxel
+2021-10-18 22:52:38,356   INFO  
+cfg.MODEL.VFE.F2V.SAMPLER = edict()
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.VFE.F2V.SAMPLER.mode: bilinear
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.VFE.F2V.SAMPLER.padding_mode: zeros
+2021-10-18 22:52:38,356   INFO  
+cfg.MODEL.MAP_TO_BEV = edict()
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.MAP_TO_BEV.NAME: Conv2DCollapse
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.MAP_TO_BEV.NUM_BEV_FEATURES: 64
+2021-10-18 22:52:38,356   INFO  
+cfg.MODEL.MAP_TO_BEV.ARGS = edict()
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.MAP_TO_BEV.ARGS.kernel_size: 1
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.MAP_TO_BEV.ARGS.stride: 1
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.MAP_TO_BEV.ARGS.bias: False
+2021-10-18 22:52:38,356   INFO  
+cfg.MODEL.BACKBONE_2D = edict()
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.BACKBONE_2D.NAME: BaseBEVBackbone
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.BACKBONE_2D.LAYER_NUMS: [10, 10, 10]
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.BACKBONE_2D.LAYER_STRIDES: [2, 2, 2]
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.BACKBONE_2D.NUM_FILTERS: [64, 128, 256]
+2021-10-18 22:52:38,356   INFO  cfg.MODEL.BACKBONE_2D.UPSAMPLE_STRIDES: [1, 2, 4]
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.BACKBONE_2D.NUM_UPSAMPLE_FILTERS: [128, 128, 128]
+2021-10-18 22:52:38,357   INFO  
+cfg.MODEL.DENSE_HEAD = edict()
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.DENSE_HEAD.NAME: AnchorHeadSingle
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.DENSE_HEAD.CLASS_AGNOSTIC: False
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.DENSE_HEAD.USE_DIRECTION_CLASSIFIER: True
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.DENSE_HEAD.DIR_OFFSET: 0.78539
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.DENSE_HEAD.DIR_LIMIT_OFFSET: 0.0
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.DENSE_HEAD.NUM_DIR_BINS: 2
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.DENSE_HEAD.ANCHOR_GENERATOR_CONFIG: [{'class_name': 'Car', 'anchor_sizes': [[3.9, 1.6, 1.56]], 'anchor_rotations': [0, 1.57], 'anchor_bottom_heights': [-1.78], 'align_center': False, 'feature_map_stride': 2, 'matched_threshold': 0.6, 'unmatched_threshold': 0.45}, {'class_name': 'Pedestrian', 'anchor_sizes': [[0.8, 0.6, 1.73]], 'anchor_rotations': [0, 1.57], 'anchor_bottom_heights': [-0.6], 'align_center': False, 'feature_map_stride': 2, 'matched_threshold': 0.5, 'unmatched_threshold': 0.35}, {'class_name': 'Cyclist', 'anchor_sizes': [[1.76, 0.6, 1.73]], 'anchor_rotations': [0, 1.57], 'anchor_bottom_heights': [-0.6], 'align_center': False, 'feature_map_stride': 2, 'matched_threshold': 0.5, 'unmatched_threshold': 0.35}]
+2021-10-18 22:52:38,357   INFO  
+cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG = edict()
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG.NAME: AxisAlignedTargetAssigner
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG.POS_FRACTION: -1.0
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG.SAMPLE_SIZE: 512
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG.NORM_BY_NUM_EXAMPLES: False
+2021-10-18 22:52:38,357   INFO  cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG.MATCH_HEIGHT: False
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.DENSE_HEAD.TARGET_ASSIGNER_CONFIG.BOX_CODER: ResidualCoder
+2021-10-18 22:52:38,358   INFO  
+cfg.MODEL.DENSE_HEAD.LOSS_CONFIG = edict()
+2021-10-18 22:52:38,358   INFO  
+cfg.MODEL.DENSE_HEAD.LOSS_CONFIG.LOSS_WEIGHTS = edict()
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.DENSE_HEAD.LOSS_CONFIG.LOSS_WEIGHTS.cls_weight: 1.0
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.DENSE_HEAD.LOSS_CONFIG.LOSS_WEIGHTS.loc_weight: 2.0
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.DENSE_HEAD.LOSS_CONFIG.LOSS_WEIGHTS.dir_weight: 0.2
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.DENSE_HEAD.LOSS_CONFIG.LOSS_WEIGHTS.code_weights: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+2021-10-18 22:52:38,358   INFO  
+cfg.MODEL.POST_PROCESSING = edict()
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.POST_PROCESSING.RECALL_THRESH_LIST: [0.3, 0.5, 0.7]
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.POST_PROCESSING.SCORE_THRESH: 0.1
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.POST_PROCESSING.OUTPUT_RAW_SCORE: False
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.POST_PROCESSING.EVAL_METRIC: kitti
+2021-10-18 22:52:38,358   INFO  
+cfg.MODEL.POST_PROCESSING.NMS_CONFIG = edict()
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.POST_PROCESSING.NMS_CONFIG.MULTI_CLASSES_NMS: False
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.POST_PROCESSING.NMS_CONFIG.NMS_TYPE: nms_gpu
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.POST_PROCESSING.NMS_CONFIG.NMS_THRESH: 0.01
+2021-10-18 22:52:38,358   INFO  cfg.MODEL.POST_PROCESSING.NMS_CONFIG.NMS_PRE_MAXSIZE: 4096
+2021-10-18 22:52:38,359   INFO  cfg.MODEL.POST_PROCESSING.NMS_CONFIG.NMS_POST_MAXSIZE: 500
+2021-10-18 22:52:38,359   INFO  
+cfg.OPTIMIZATION = edict()
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.BATCH_SIZE_PER_GPU: 2
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.NUM_EPOCHS: 80
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.OPTIMIZER: adam_onecycle
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.LR: 0.001
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.WEIGHT_DECAY: 0.01
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.MOMENTUM: 0.9
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.MOMS: [0.95, 0.85]
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.PCT_START: 0.4
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.DIV_FACTOR: 10
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.DECAY_STEP_LIST: [35, 45]
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.LR_DECAY: 0.1
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.LR_CLIP: 1e-07
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.LR_WARMUP: False
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.WARMUP_EPOCH: 1
+2021-10-18 22:52:38,359   INFO  cfg.OPTIMIZATION.GRAD_NORM_CLIP: 10
+2021-10-18 22:52:38,360   INFO  cfg.TAG: CaDDN
+2021-10-18 22:52:38,360   INFO  cfg.EXP_GROUP_PATH: cfgs/kitti_models
+2021-10-18 22:52:38,482   INFO  Loading KITTI dataset
+2021-10-18 22:52:38,792   INFO  Total samples for KITTI dataset: 3712
+2021-10-18 22:52:40,380   INFO  DistributedDataParallel(
+  (module): CaDDN(
+    (vfe): ImageVFE(
+      (ffn): DepthFFN(
+        (ddn): DDNDeepLabV3(
+          (model): DeepLabV3(
+            (backbone): IntermediateLayerGetter(
+              (conv1): Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+              (bn1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (relu): ReLU(inplace=True)
+              (maxpool): MaxPool2d(kernel_size=3, stride=2, padding=1, dilation=1, ceil_mode=False)
+              (layer1): Sequential(
+                (0): Bottleneck(
+                  (conv1): Conv2d(64, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                  (bn2): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                  (downsample): Sequential(
+                    (0): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                    (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  )
+                )
+                (1): Bottleneck(
+                  (conv1): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                  (bn2): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (2): Bottleneck(
+                  (conv1): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                  (bn2): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+              )
+              (layer2): Sequential(
+                (0): Bottleneck(
+                  (conv1): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+                  (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                  (downsample): Sequential(
+                    (0): Conv2d(256, 512, kernel_size=(1, 1), stride=(2, 2), bias=False)
+                    (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  )
+                )
+                (1): Bottleneck(
+                  (conv1): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                  (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (2): Bottleneck(
+                  (conv1): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                  (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (3): Bottleneck(
+                  (conv1): Conv2d(512, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                  (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(128, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+              )
+              (layer3): Sequential(
+                (0): Bottleneck(
+                  (conv1): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                  (downsample): Sequential(
+                    (0): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                    (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  )
+                )
+                (1): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (2): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (3): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (4): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (5): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (6): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (7): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (8): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (9): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (10): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (11): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (12): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (13): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (14): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (15): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (16): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (17): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (18): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (19): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (20): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (21): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (22): Bottleneck(
+                  (conv1): Conv2d(1024, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(256, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+              )
+              (layer4): Sequential(
+                (0): Bottleneck(
+                  (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(2, 2), dilation=(2, 2), bias=False)
+                  (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                  (downsample): Sequential(
+                    (0): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                    (1): BatchNorm2d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  )
+                )
+                (1): Bottleneck(
+                  (conv1): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(4, 4), dilation=(4, 4), bias=False)
+                  (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+                (2): Bottleneck(
+                  (conv1): Conv2d(2048, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(4, 4), dilation=(4, 4), bias=False)
+                  (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (conv3): Conv2d(512, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (bn3): BatchNorm2d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (relu): ReLU(inplace=True)
+                )
+              )
+            )
+            (classifier): DeepLabHead(
+              (0): ASPP(
+                (convs): ModuleList(
+                  (0): Sequential(
+                    (0): Conv2d(2048, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                    (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                    (2): ReLU()
+                  )
+                  (1): ASPPConv(
+                    (0): Conv2d(2048, 256, kernel_size=(3, 3), stride=(1, 1), padding=(12, 12), dilation=(12, 12), bias=False)
+                    (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                    (2): ReLU()
+                  )
+                  (2): ASPPConv(
+                    (0): Conv2d(2048, 256, kernel_size=(3, 3), stride=(1, 1), padding=(24, 24), dilation=(24, 24), bias=False)
+                    (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                    (2): ReLU()
+                  )
+                  (3): ASPPConv(
+                    (0): Conv2d(2048, 256, kernel_size=(3, 3), stride=(1, 1), padding=(36, 36), dilation=(36, 36), bias=False)
+                    (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                    (2): ReLU()
+                  )
+                  (4): ASPPPooling(
+                    (0): AdaptiveAvgPool2d(output_size=1)
+                    (1): Conv2d(2048, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                    (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                    (3): ReLU()
+                  )
+                )
+                (project): Sequential(
+                  (0): Conv2d(1280, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+                  (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+                  (2): ReLU()
+                  (3): Dropout(p=0.5, inplace=False)
+                )
+              )
+              (1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+              (2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+              (3): ReLU()
+              (4): Conv2d(256, 81, kernel_size=(1, 1), stride=(1, 1))
+            )
+          )
+        )
+        (channel_reduce): BasicBlock2D(
+          (conv): Conv2d(256, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (bn): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+          (relu): ReLU(inplace=True)
+        )
+        (ddn_loss): DDNLoss(
+          (balancer): Balancer()
+          (loss_func): FocalLoss()
+        )
+      )
+      (f2v): FrustumToVoxel(
+        (grid_generator): FrustumGridGenerator()
+        (sampler): Sampler()
+      )
+    )
+    (backbone_3d): None
+    (map_to_bev_module): Conv2DCollapse(
+      (block): BasicBlock2D(
+        (conv): Conv2d(1600, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): ReLU(inplace=True)
+      )
+    )
+    (pfe): None
+    (backbone_2d): BaseBEVBackbone(
+      (blocks): ModuleList(
+        (0): Sequential(
+          (0): ZeroPad2d(padding=(1, 1, 1, 1), value=0.0)
+          (1): Conv2d(64, 64, kernel_size=(3, 3), stride=(2, 2), bias=False)
+          (2): BatchNorm2d(64, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (3): ReLU()
+          (4): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (5): BatchNorm2d(64, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (6): ReLU()
+          (7): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (8): BatchNorm2d(64, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (9): ReLU()
+          (10): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (11): BatchNorm2d(64, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (12): ReLU()
+          (13): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (14): BatchNorm2d(64, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (15): ReLU()
+          (16): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (17): BatchNorm2d(64, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (18): ReLU()
+          (19): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (20): BatchNorm2d(64, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (21): ReLU()
+          (22): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (23): BatchNorm2d(64, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (24): ReLU()
+          (25): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (26): BatchNorm2d(64, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (27): ReLU()
+          (28): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (29): BatchNorm2d(64, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (30): ReLU()
+          (31): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (32): BatchNorm2d(64, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (33): ReLU()
+        )
+        (1): Sequential(
+          (0): ZeroPad2d(padding=(1, 1, 1, 1), value=0.0)
+          (1): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), bias=False)
+          (2): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (3): ReLU()
+          (4): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (5): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (6): ReLU()
+          (7): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (8): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (9): ReLU()
+          (10): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (11): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (12): ReLU()
+          (13): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (14): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (15): ReLU()
+          (16): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (17): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (18): ReLU()
+          (19): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (20): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (21): ReLU()
+          (22): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (23): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (24): ReLU()
+          (25): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (26): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (27): ReLU()
+          (28): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (29): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (30): ReLU()
+          (31): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (32): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (33): ReLU()
+        )
+        (2): Sequential(
+          (0): ZeroPad2d(padding=(1, 1, 1, 1), value=0.0)
+          (1): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), bias=False)
+          (2): BatchNorm2d(256, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (3): ReLU()
+          (4): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (5): BatchNorm2d(256, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (6): ReLU()
+          (7): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (8): BatchNorm2d(256, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (9): ReLU()
+          (10): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (11): BatchNorm2d(256, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (12): ReLU()
+          (13): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (14): BatchNorm2d(256, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (15): ReLU()
+          (16): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (17): BatchNorm2d(256, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (18): ReLU()
+          (19): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (20): BatchNorm2d(256, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (21): ReLU()
+          (22): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (23): BatchNorm2d(256, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (24): ReLU()
+          (25): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (26): BatchNorm2d(256, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (27): ReLU()
+          (28): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (29): BatchNorm2d(256, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (30): ReLU()
+          (31): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+          (32): BatchNorm2d(256, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (33): ReLU()
+        )
+      )
+      (deblocks): ModuleList(
+        (0): Sequential(
+          (0): ConvTranspose2d(64, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (1): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (2): ReLU()
+        )
+        (1): Sequential(
+          (0): ConvTranspose2d(128, 128, kernel_size=(2, 2), stride=(2, 2), bias=False)
+          (1): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (2): ReLU()
+        )
+        (2): Sequential(
+          (0): ConvTranspose2d(256, 128, kernel_size=(4, 4), stride=(4, 4), bias=False)
+          (1): BatchNorm2d(128, eps=0.001, momentum=0.01, affine=True, track_running_stats=True)
+          (2): ReLU()
+        )
+      )
+    )
+    (dense_head): AnchorHeadSingle(
+      (cls_loss_func): SigmoidFocalClassificationLoss()
+      (reg_loss_func): WeightedSmoothL1Loss()
+      (dir_loss_func): WeightedCrossEntropyLoss()
+      (conv_cls): Conv2d(384, 18, kernel_size=(1, 1), stride=(1, 1))
+      (conv_box): Conv2d(384, 42, kernel_size=(1, 1), stride=(1, 1))
+      (conv_dir_cls): Conv2d(384, 12, kernel_size=(1, 1), stride=(1, 1))
+    )
+    (point_head): None
+    (roi_head): None
+  )
+)
+2021-10-18 22:52:40,392   INFO  **********************Start training cfgs/kitti_models/CaDDN(default)**********************
+2021-10-19 23:40:41,002   INFO  **********************End training cfgs/kitti_models/CaDDN(default)**********************
+
+
+
+2021-10-19 23:40:41,012   INFO  **********************Start evaluation cfgs/kitti_models/CaDDN(default)**********************
+2021-10-19 23:40:41,017   INFO  Loading KITTI dataset
+2021-10-19 23:40:41,218   INFO  Total samples for KITTI dataset: 3769
+2021-10-19 23:40:41,223   INFO  ==> Loading parameters from checkpoint /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_70.pth to CPU
+2021-10-19 23:40:41,726   INFO  ==> Checkpoint trained from version: pcdet+0.3.0+c9d31d3
+2021-10-19 23:40:48,203   INFO  ==> Done (loaded 903/903)
+2021-10-19 23:40:48,254   INFO  *************** EPOCH 70 EVALUATION *****************
+2021-10-19 23:45:56,351   INFO  *************** Performance of EPOCH 70 *****************
+2021-10-19 23:45:56,351   INFO  Generate label finished(sec_per_example: 0.0817 second).
+2021-10-19 23:45:56,351   INFO  recall_roi_0.3: 0.000000
+2021-10-19 23:45:56,351   INFO  recall_rcnn_0.3: 0.520558
+2021-10-19 23:45:56,351   INFO  recall_roi_0.5: 0.000000
+2021-10-19 23:45:56,351   INFO  recall_rcnn_0.5: 0.375513
+2021-10-19 23:45:56,351   INFO  recall_roi_0.7: 0.000000
+2021-10-19 23:45:56,351   INFO  recall_rcnn_0.7: 0.181093
+2021-10-19 23:45:56,354   INFO  Average predicted number of objects(3769 samples): 4.304
+2021-10-19 23:46:38,189   INFO  
+Car AP@0.70, 0.70, 0.70:
+bbox AP:89.8830, 79.7073, 71.2572
+bev  AP:32.4528, 24.7749, 23.1641
+3d   AP:25.8661, 20.9145, 17.9754
+aos  AP:88.68, 78.10, 69.44
+Car AP_R40@0.70, 0.70, 0.70:
+bbox AP:93.0372, 82.0520, 74.9717
+bev  AP:28.2673, 20.3307, 17.6672
+3d   AP:20.6756, 14.8738, 12.6469
+aos  AP:91.71, 80.26, 72.72
+Car AP@0.70, 0.50, 0.50:
+bbox AP:89.8830, 79.7073, 71.2572
+bev  AP:61.5946, 46.4063, 44.4823
+3d   AP:56.8897, 43.6101, 37.8920
+aos  AP:88.68, 78.10, 69.44
+Car AP_R40@0.70, 0.50, 0.50:
+bbox AP:93.0372, 82.0520, 74.9717
+bev  AP:61.4701, 46.1728, 42.0096
+3d   AP:55.3134, 40.8084, 36.8564
+aos  AP:91.71, 80.26, 72.72
+Pedestrian AP@0.50, 0.50, 0.50:
+bbox AP:46.3836, 38.6414, 32.0932
+bev  AP:19.2571, 14.8014, 14.1492
+3d   AP:15.7726, 13.6495, 12.6011
+aos  AP:34.94, 29.45, 25.06
+Pedestrian AP_R40@0.50, 0.50, 0.50:
+bbox AP:44.9814, 36.4933, 30.2818
+bev  AP:14.1732, 9.8470, 8.1666
+3d   AP:10.5577, 7.5841, 6.0766
+aos  AP:32.30, 25.82, 21.33
+Pedestrian AP@0.50, 0.25, 0.25:
+bbox AP:46.3836, 38.6414, 32.0932
+bev  AP:34.8330, 28.7075, 23.3758
+3d   AP:34.6201, 28.1691, 23.1216
+aos  AP:34.94, 29.45, 25.06
+Pedestrian AP_R40@0.50, 0.25, 0.25:
+bbox AP:44.9814, 36.4933, 30.2818
+bev  AP:31.8210, 24.9126, 20.2110
+3d   AP:31.5754, 24.4056, 18.9711
+aos  AP:32.30, 25.82, 21.33
+Cyclist AP@0.50, 0.50, 0.50:
+bbox AP:30.7443, 22.3375, 20.3571
+bev  AP:2.5495, 1.7721, 1.8021
+3d   AP:2.0654, 1.2987, 1.2987
+aos  AP:25.50, 17.29, 15.25
+Cyclist AP_R40@0.50, 0.50, 0.50:
+bbox AP:26.9557, 16.4918, 15.5108
+bev  AP:1.8625, 1.0210, 1.0098
+3d   AP:1.2604, 0.6690, 0.5964
+aos  AP:22.39, 13.62, 12.80
+Cyclist AP@0.50, 0.25, 0.25:
+bbox AP:30.7443, 22.3375, 20.3571
+bev  AP:15.0492, 12.2401, 11.3082
+3d   AP:14.9862, 12.2060, 11.2640
+aos  AP:25.50, 17.29, 15.25
+Cyclist AP_R40@0.50, 0.25, 0.25:
+bbox AP:26.9557, 16.4918, 15.5108
+bev  AP:8.7842, 4.5815, 4.1719
+3d   AP:8.6732, 4.4586, 4.1005
+aos  AP:22.39, 13.62, 12.80
+
+2021-10-19 23:46:38,198   INFO  Result is save to /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/eval/eval_with_train/epoch_70/val
+2021-10-19 23:46:38,198   INFO  ****************Evaluation done.*****************
+2021-10-19 23:46:38,240   INFO  Epoch 70 has been evaluated
+2021-10-19 23:46:38,245   INFO  ==> Loading parameters from checkpoint /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_71.pth to CPU
+2021-10-19 23:46:38,852   INFO  ==> Checkpoint trained from version: pcdet+0.3.0+c9d31d3
+2021-10-19 23:46:46,061   INFO  ==> Done (loaded 903/903)
+2021-10-19 23:46:46,124   INFO  *************** EPOCH 71 EVALUATION *****************
+2021-10-19 23:51:52,724   INFO  *************** Performance of EPOCH 71 *****************
+2021-10-19 23:51:52,724   INFO  Generate label finished(sec_per_example: 0.0813 second).
+2021-10-19 23:51:52,725   INFO  recall_roi_0.3: 0.000000
+2021-10-19 23:51:52,725   INFO  recall_rcnn_0.3: 0.516856
+2021-10-19 23:51:52,725   INFO  recall_roi_0.5: 0.000000
+2021-10-19 23:51:52,725   INFO  recall_rcnn_0.5: 0.376082
+2021-10-19 23:51:52,725   INFO  recall_roi_0.7: 0.000000
+2021-10-19 23:51:52,725   INFO  recall_rcnn_0.7: 0.180125
+2021-10-19 23:51:52,727   INFO  Average predicted number of objects(3769 samples): 4.131
+2021-10-19 23:52:11,546   INFO  Car AP@0.70, 0.70, 0.70:
+bbox AP:90.0013, 79.6882, 71.3471
+bev  AP:32.5484, 24.9347, 23.2391
+3d   AP:25.6295, 18.8702, 17.8350
+aos  AP:89.18, 78.46, 69.91
+Car AP_R40@0.70, 0.70, 0.70:
+bbox AP:93.1291, 80.2651, 73.0214
+bev  AP:28.4231, 20.4718, 17.7526
+3d   AP:20.2226, 13.9993, 12.4405
+aos  AP:92.20, 78.97, 71.34
+Car AP@0.70, 0.50, 0.50:
+bbox AP:90.0013, 79.6882, 71.3471
+bev  AP:62.4290, 46.6699, 44.6297
+3d   AP:57.8995, 44.1832, 38.2362
+aos  AP:89.18, 78.46, 69.91
+Car AP_R40@0.70, 0.50, 0.50:
+bbox AP:93.1291, 80.2651, 73.0214
+bev  AP:62.2807, 46.4855, 42.2721
+3d   AP:57.0101, 41.3297, 37.3455
+aos  AP:92.20, 78.97, 71.34
+Pedestrian AP@0.50, 0.50, 0.50:
+bbox AP:45.8973, 38.3837, 32.2660
+bev  AP:18.8064, 14.7002, 13.8330
+3d   AP:15.9466, 13.7433, 12.2025
+aos  AP:34.77, 28.93, 24.76
+Pedestrian AP_R40@0.50, 0.50, 0.50:
+bbox AP:42.8255, 35.5312, 29.4098
+bev  AP:13.6488, 10.0527, 8.0335
+3d   AP:11.0681, 7.9281, 6.2981
+aos  AP:30.80, 24.99, 20.68
+Pedestrian AP@0.50, 0.25, 0.25:
+bbox AP:45.8973, 38.3837, 32.2660
+bev  AP:32.6088, 28.0555, 23.9119
+3d   AP:32.4550, 27.7691, 23.4181
+aos  AP:34.77, 28.93, 24.76
+Pedestrian AP_R40@0.50, 0.25, 0.25:
+bbox AP:42.8255, 35.5312, 29.4098
+bev  AP:30.9445, 24.1708, 19.6864
+3d   AP:30.5415, 23.6028, 19.1602
+aos  AP:30.80, 24.99, 20.68
+Cyclist AP@0.50, 0.50, 0.50:
+bbox AP:34.8141, 24.2935, 24.0303
+bev  AP:2.8571, 2.2849, 2.2937
+3d   AP:2.6899, 2.2187, 1.8182
+aos  AP:29.68, 20.93, 20.82
+Cyclist AP_R40@0.50, 0.50, 0.50:
+bbox AP:32.4014, 19.9556, 18.8112
+bev  AP:1.9279, 1.0878, 1.0333
+3d   AP:1.4690, 0.8044, 0.6490
+aos  AP:26.75, 16.04, 15.11
+Cyclist AP@0.50, 0.25, 0.25:
+bbox AP:34.8141, 24.2935, 24.0303
+bev  AP:15.4131, 12.2860, 11.3173
+3d   AP:15.0785, 12.0238, 11.0744
+aos  AP:29.68, 20.93, 20.82
+Cyclist AP_R40@0.50, 0.25, 0.25:
+bbox AP:32.4014, 19.9556, 18.8112
+bev  AP:10.6601, 5.4945, 5.1563
+3d   AP:9.9283, 5.2169, 4.8980
+aos  AP:26.75, 16.04, 15.11
+
+2021-10-19 23:52:11,547   INFO  Result is save to /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/eval/eval_with_train/epoch_71/val
+2021-10-19 23:52:11,547   INFO  ****************Evaluation done.*****************
+2021-10-19 23:52:11,585   INFO  Epoch 71 has been evaluated
+2021-10-19 23:52:11,589   INFO  ==> Loading parameters from checkpoint /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_72.pth to CPU
+2021-10-19 23:52:12,193   INFO  ==> Checkpoint trained from version: pcdet+0.3.0+c9d31d3
+2021-10-19 23:52:18,823   INFO  ==> Done (loaded 903/903)
+2021-10-19 23:52:18,881   INFO  *************** EPOCH 72 EVALUATION *****************
+2021-10-19 23:57:25,200   INFO  *************** Performance of EPOCH 72 *****************
+2021-10-19 23:57:25,201   INFO  Generate label finished(sec_per_example: 0.0813 second).
+2021-10-19 23:57:25,201   INFO  recall_roi_0.3: 0.000000
+2021-10-19 23:57:25,201   INFO  recall_rcnn_0.3: 0.517255
+2021-10-19 23:57:25,201   INFO  recall_roi_0.5: 0.000000
+2021-10-19 23:57:25,201   INFO  recall_rcnn_0.5: 0.374601
+2021-10-19 23:57:25,201   INFO  recall_roi_0.7: 0.000000
+2021-10-19 23:57:25,201   INFO  recall_rcnn_0.7: 0.181378
+2021-10-19 23:57:25,204   INFO  Average predicted number of objects(3769 samples): 4.036
+2021-10-19 23:57:43,875   INFO  Car AP@0.70, 0.70, 0.70:
+bbox AP:89.9036, 79.5395, 71.2136
+bev  AP:32.3948, 24.8270, 23.0890
+3d   AP:25.9906, 20.7770, 17.9752
+aos  AP:89.03, 78.26, 69.75
+Car AP_R40@0.70, 0.70, 0.70:
+bbox AP:93.1192, 80.1576, 74.9367
+bev  AP:28.0224, 20.2827, 17.6286
+3d   AP:20.6465, 14.7851, 12.5940
+aos  AP:92.14, 78.79, 73.09
+Car AP@0.70, 0.50, 0.50:
+bbox AP:89.9036, 79.5395, 71.2136
+bev  AP:62.2866, 46.6774, 44.7733
+3d   AP:57.4511, 43.9735, 38.1208
+aos  AP:89.03, 78.26, 69.75
+Car AP_R40@0.70, 0.50, 0.50:
+bbox AP:93.1192, 80.1576, 74.9367
+bev  AP:62.1817, 46.4792, 42.3509
+3d   AP:56.6429, 41.1249, 37.1265
+aos  AP:92.14, 78.79, 73.09
+Pedestrian AP@0.50, 0.50, 0.50:
+bbox AP:46.4952, 38.8381, 32.4577
+bev  AP:18.6135, 14.5267, 13.9379
+3d   AP:16.2446, 14.0341, 13.0285
+aos  AP:35.79, 29.70, 25.08
+Pedestrian AP_R40@0.50, 0.50, 0.50:
+bbox AP:44.5469, 35.9954, 29.7212
+bev  AP:13.2448, 10.0000, 8.0686
+3d   AP:10.9243, 8.1655, 6.3931
+aos  AP:32.60, 25.83, 21.31
+Pedestrian AP@0.50, 0.25, 0.25:
+bbox AP:46.4952, 38.8381, 32.4577
+bev  AP:35.5079, 28.0161, 23.4509
+3d   AP:35.2170, 27.8146, 23.1226
+aos  AP:35.79, 29.70, 25.08
+Pedestrian AP_R40@0.50, 0.25, 0.25:
+bbox AP:44.5469, 35.9954, 29.7212
+bev  AP:31.6692, 23.9508, 19.5185
+3d   AP:31.3872, 23.6102, 19.1850
+aos  AP:32.60, 25.83, 21.31
+Cyclist AP@0.50, 0.50, 0.50:
+bbox AP:35.5416, 24.3323, 24.1566
+bev  AP:3.9147, 2.6229, 2.7427
+3d   AP:2.1033, 1.5881, 1.5896
+aos  AP:29.17, 19.86, 19.83
+Cyclist AP_R40@0.50, 0.50, 0.50:
+bbox AP:33.1817, 20.0684, 19.0765
+bev  AP:2.7631, 1.5470, 1.4623
+3d   AP:1.5000, 0.9060, 0.8297
+aos  AP:27.00, 16.24, 15.43
+Cyclist AP@0.50, 0.25, 0.25:
+bbox AP:35.5416, 24.3323, 24.1566
+bev  AP:16.6704, 12.4111, 12.3048
+3d   AP:16.5145, 12.2483, 11.3264
+aos  AP:29.17, 19.86, 19.83
+Cyclist AP_R40@0.50, 0.25, 0.25:
+bbox AP:33.1817, 20.0684, 19.0765
+bev  AP:11.1952, 5.8467, 5.3578
+3d   AP:10.9935, 5.4528, 4.9483
+aos  AP:27.00, 16.24, 15.43
+
+2021-10-19 23:57:43,877   INFO  Result is save to /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/eval/eval_with_train/epoch_72/val
+2021-10-19 23:57:43,877   INFO  ****************Evaluation done.*****************
+2021-10-19 23:57:43,907   INFO  Epoch 72 has been evaluated
+2021-10-19 23:57:43,912   INFO  ==> Loading parameters from checkpoint /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_73.pth to CPU
+2021-10-19 23:57:44,558   INFO  ==> Checkpoint trained from version: pcdet+0.3.0+c9d31d3
+2021-10-19 23:57:52,281   INFO  ==> Done (loaded 903/903)
+2021-10-19 23:57:52,346   INFO  *************** EPOCH 73 EVALUATION *****************
+2021-10-20 00:02:59,540   INFO  *************** Performance of EPOCH 73 *****************
+2021-10-20 00:02:59,540   INFO  Generate label finished(sec_per_example: 0.0815 second).
+2021-10-20 00:02:59,540   INFO  recall_roi_0.3: 0.000000
+2021-10-20 00:02:59,541   INFO  recall_rcnn_0.3: 0.513098
+2021-10-20 00:02:59,541   INFO  recall_roi_0.5: 0.000000
+2021-10-20 00:02:59,541   INFO  recall_rcnn_0.5: 0.373235
+2021-10-20 00:02:59,541   INFO  recall_roi_0.7: 0.000000
+2021-10-20 00:02:59,541   INFO  recall_rcnn_0.7: 0.182916
+2021-10-20 00:02:59,544   INFO  Average predicted number of objects(3769 samples): 4.032
+2021-10-20 00:03:20,573   INFO  Car AP@0.70, 0.70, 0.70:
+bbox AP:90.1568, 79.8405, 71.4239
+bev  AP:33.0991, 25.3876, 23.6241
+3d   AP:26.4941, 21.0883, 18.2315
+aos  AP:89.17, 78.49, 69.80
+Car AP_R40@0.70, 0.70, 0.70:
+bbox AP:93.4738, 80.4837, 75.2719
+bev  AP:29.0954, 20.9046, 18.9510
+3d   AP:21.7045, 15.1346, 12.9369
+aos  AP:92.36, 79.03, 73.25
+Car AP@0.70, 0.50, 0.50:
+bbox AP:90.1568, 79.8405, 71.4239
+bev  AP:62.2271, 46.7174, 44.9139
+3d   AP:57.5988, 43.9657, 38.2067
+aos  AP:89.17, 78.49, 69.80
+Car AP_R40@0.70, 0.50, 0.50:
+bbox AP:93.4738, 80.4837, 75.2719
+bev  AP:62.1805, 46.5381, 42.4278
+3d   AP:55.9579, 41.2174, 37.2181
+aos  AP:92.36, 79.03, 73.25
+Pedestrian AP@0.50, 0.50, 0.50:
+bbox AP:46.3900, 38.4847, 31.9117
+bev  AP:19.8214, 14.8430, 14.3098
+3d   AP:16.3135, 14.0967, 12.9973
+aos  AP:35.37, 29.25, 24.63
+Pedestrian AP_R40@0.50, 0.50, 0.50:
+bbox AP:44.0432, 35.3057, 29.1163
+bev  AP:14.8067, 10.4216, 8.5064
+3d   AP:11.3280, 8.1357, 6.5716
+aos  AP:31.76, 25.04, 20.70
+Pedestrian AP@0.50, 0.25, 0.25:
+bbox AP:46.3900, 38.4847, 31.9117
+bev  AP:35.1137, 28.4112, 23.4590
+3d   AP:34.6033, 27.6352, 23.0619
+aos  AP:35.37, 29.25, 24.63
+Pedestrian AP_R40@0.50, 0.25, 0.25:
+bbox AP:44.0432, 35.3057, 29.1163
+bev  AP:31.8025, 24.9673, 19.5224
+3d   AP:31.0949, 23.4695, 19.0331
+aos  AP:31.76, 25.04, 20.70
+Cyclist AP@0.50, 0.50, 0.50:
+bbox AP:33.6023, 23.9882, 23.6404
+bev  AP:3.4848, 2.6693, 2.6836
+3d   AP:3.1327, 2.6089, 2.6161
+aos  AP:26.85, 19.46, 18.13
+Cyclist AP_R40@0.50, 0.50, 0.50:
+bbox AP:31.6125, 19.4919, 18.3235
+bev  AP:2.0514, 1.1280, 1.1491
+3d   AP:1.5322, 0.8743, 0.8144
+aos  AP:24.66, 14.96, 13.95
+Cyclist AP@0.50, 0.25, 0.25:
+bbox AP:33.6023, 23.9882, 23.6404
+bev  AP:15.6120, 12.1205, 12.1784
+3d   AP:11.7913, 7.3662, 7.1565
+aos  AP:26.85, 19.46, 18.13
+Cyclist AP_R40@0.50, 0.25, 0.25:
+bbox AP:31.6125, 19.4919, 18.3235
+bev  AP:10.3821, 5.6147, 5.3737
+3d   AP:8.0175, 4.5799, 4.5166
+aos  AP:24.66, 14.96, 13.95
+
+2021-10-20 00:03:20,574   INFO  Result is save to /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/eval/eval_with_train/epoch_73/val
+2021-10-20 00:03:20,575   INFO  ****************Evaluation done.*****************
+2021-10-20 00:03:20,619   INFO  Epoch 73 has been evaluated
+2021-10-20 00:03:20,622   INFO  ==> Loading parameters from checkpoint /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_74.pth to CPU
+2021-10-20 00:03:21,280   INFO  ==> Checkpoint trained from version: pcdet+0.3.0+c9d31d3
+2021-10-20 00:03:28,871   INFO  ==> Done (loaded 903/903)
+2021-10-20 00:03:28,939   INFO  *************** EPOCH 74 EVALUATION *****************
+2021-10-20 00:08:38,818   INFO  *************** Performance of EPOCH 74 *****************
+2021-10-20 00:08:38,819   INFO  Generate label finished(sec_per_example: 0.0822 second).
+2021-10-20 00:08:38,819   INFO  recall_roi_0.3: 0.000000
+2021-10-20 00:08:38,819   INFO  recall_rcnn_0.3: 0.520843
+2021-10-20 00:08:38,819   INFO  recall_roi_0.5: 0.000000
+2021-10-20 00:08:38,819   INFO  recall_rcnn_0.5: 0.378815
+2021-10-20 00:08:38,819   INFO  recall_roi_0.7: 0.000000
+2021-10-20 00:08:38,819   INFO  recall_rcnn_0.7: 0.180581
+2021-10-20 00:08:38,822   INFO  Average predicted number of objects(3769 samples): 4.271
+2021-10-20 00:09:00,351   INFO  Car AP@0.70, 0.70, 0.70:
+bbox AP:90.0847, 79.7269, 71.3179
+bev  AP:32.7095, 25.0093, 23.1613
+3d   AP:25.6947, 18.9165, 17.9159
+aos  AP:89.13, 78.40, 69.79
+Car AP_R40@0.70, 0.70, 0.70:
+bbox AP:93.2309, 80.2830, 75.0393
+bev  AP:28.5089, 20.4713, 17.7443
+3d   AP:20.4274, 13.9365, 12.5139
+aos  AP:92.16, 78.86, 73.14
+Car AP@0.70, 0.50, 0.50:
+bbox AP:90.0847, 79.7269, 71.3179
+bev  AP:62.2509, 46.6747, 44.7347
+3d   AP:57.8791, 44.2360, 38.2406
+aos  AP:89.13, 78.40, 69.79
+Car AP_R40@0.70, 0.50, 0.50:
+bbox AP:93.2309, 80.2830, 75.0393
+bev  AP:62.1385, 46.4755, 42.3050
+3d   AP:57.0076, 41.3012, 37.2830
+aos  AP:92.16, 78.86, 73.14
+Pedestrian AP@0.50, 0.50, 0.50:
+bbox AP:46.1308, 38.6135, 32.0427
+bev  AP:18.8008, 14.5267, 13.8907
+3d   AP:15.7137, 13.6364, 12.4689
+aos  AP:34.90, 28.88, 24.72
+Pedestrian AP_R40@0.50, 0.50, 0.50:
+bbox AP:43.7342, 35.2351, 30.1844
+bev  AP:13.2182, 9.9878, 8.1049
+3d   AP:10.6687, 7.8316, 6.2225
+aos  AP:31.18, 24.69, 21.21
+Pedestrian AP@0.50, 0.25, 0.25:
+bbox AP:46.1308, 38.6135, 32.0427
+bev  AP:35.1933, 28.6605, 23.2365
+3d   AP:34.8145, 27.2787, 22.9365
+aos  AP:34.90, 28.88, 24.72
+Pedestrian AP_R40@0.50, 0.25, 0.25:
+bbox AP:43.7342, 35.2351, 30.1844
+bev  AP:31.8822, 24.8496, 20.1834
+3d   AP:31.2142, 23.3475, 18.9106
+aos  AP:31.18, 24.69, 21.21
+Cyclist AP@0.50, 0.50, 0.50:
+bbox AP:34.1817, 23.6677, 23.3766
+bev  AP:4.4366, 3.4498, 3.4643
+3d   AP:4.1370, 3.4037, 3.4183
+aos  AP:24.55, 17.04, 16.89
+Cyclist AP_R40@0.50, 0.50, 0.50:
+bbox AP:31.2327, 19.1756, 18.1158
+bev  AP:2.2479, 1.3347, 1.2516
+3d   AP:1.9142, 1.0579, 1.0725
+aos  AP:22.47, 13.84, 13.15
+Cyclist AP@0.50, 0.25, 0.25:
+bbox AP:34.1817, 23.6677, 23.3766
+bev  AP:15.7653, 12.2349, 12.1794
+3d   AP:14.0197, 7.9817, 6.6596
+aos  AP:24.55, 17.04, 16.89
+Cyclist AP_R40@0.50, 0.25, 0.25:
+bbox AP:31.2327, 19.1756, 18.1158
+bev  AP:10.6526, 5.3941, 5.1350
+3d   AP:9.6710, 4.8911, 4.4850
+aos  AP:22.47, 13.84, 13.15
+
+2021-10-20 00:09:00,353   INFO  Result is save to /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/eval/eval_with_train/epoch_74/val
+2021-10-20 00:09:00,353   INFO  ****************Evaluation done.*****************
+2021-10-20 00:09:00,394   INFO  Epoch 74 has been evaluated
+2021-10-20 00:09:00,397   INFO  ==> Loading parameters from checkpoint /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_75.pth to CPU
+2021-10-20 00:09:01,073   INFO  ==> Checkpoint trained from version: pcdet+0.3.0+c9d31d3
+2021-10-20 00:09:08,506   INFO  ==> Done (loaded 903/903)
+2021-10-20 00:09:08,571   INFO  *************** EPOCH 75 EVALUATION *****************
+2021-10-20 00:14:18,165   INFO  *************** Performance of EPOCH 75 *****************
+2021-10-20 00:14:18,165   INFO  Generate label finished(sec_per_example: 0.0821 second).
+2021-10-20 00:14:18,165   INFO  recall_roi_0.3: 0.000000
+2021-10-20 00:14:18,165   INFO  recall_rcnn_0.3: 0.522608
+2021-10-20 00:14:18,165   INFO  recall_roi_0.5: 0.000000
+2021-10-20 00:14:18,165   INFO  recall_rcnn_0.5: 0.379043
+2021-10-20 00:14:18,166   INFO  recall_roi_0.7: 0.000000
+2021-10-20 00:14:18,166   INFO  recall_rcnn_0.7: 0.180695
+2021-10-20 00:14:18,168   INFO  Average predicted number of objects(3769 samples): 4.343
+2021-10-20 00:14:37,160   INFO  Car AP@0.70, 0.70, 0.70:
+bbox AP:89.9062, 79.6440, 71.2495
+bev  AP:32.3693, 24.9887, 23.1312
+3d   AP:25.7731, 20.5964, 17.7792
+aos  AP:89.15, 78.43, 69.81
+Car AP_R40@0.70, 0.70, 0.70:
+bbox AP:93.0890, 80.1023, 74.8753
+bev  AP:28.0819, 20.2756, 18.2910
+3d   AP:20.1886, 14.4274, 12.3575
+aos  AP:92.23, 78.80, 73.05
+Car AP@0.70, 0.50, 0.50:
+bbox AP:89.9062, 79.6440, 71.2495
+bev  AP:61.8112, 46.5344, 44.6784
+3d   AP:57.6474, 44.0186, 38.1689
+aos  AP:89.15, 78.43, 69.81
+Car AP_R40@0.70, 0.50, 0.50:
+bbox AP:93.0890, 80.1023, 74.8753
+bev  AP:61.7040, 46.2479, 42.1078
+3d   AP:56.6097, 41.0381, 37.0799
+aos  AP:92.23, 78.80, 73.05
+Pedestrian AP@0.50, 0.50, 0.50:
+bbox AP:47.5267, 39.6494, 32.6987
+bev  AP:18.6660, 14.6607, 14.0351
+3d   AP:15.9825, 14.0034, 12.7239
+aos  AP:36.47, 30.00, 25.20
+Pedestrian AP_R40@0.50, 0.50, 0.50:
+bbox AP:46.1377, 37.5273, 31.1763
+bev  AP:13.3550, 9.8168, 8.0471
+3d   AP:11.3912, 8.0335, 6.4602
+aos  AP:33.27, 26.50, 21.94
+Pedestrian AP@0.50, 0.25, 0.25:
+bbox AP:47.5267, 39.6494, 32.6987
+bev  AP:35.0947, 28.5434, 23.5098
+3d   AP:34.8422, 27.5942, 23.2663
+aos  AP:36.47, 30.00, 25.20
+Pedestrian AP_R40@0.50, 0.25, 0.25:
+bbox AP:46.1377, 37.5273, 31.1763
+bev  AP:31.7011, 24.7814, 20.2178
+3d   AP:31.2891, 24.3132, 19.1497
+aos  AP:33.27, 26.50, 21.94
+Cyclist AP@0.50, 0.50, 0.50:
+bbox AP:34.1034, 23.8919, 21.4875
+bev  AP:4.8451, 3.5476, 3.5105
+3d   AP:4.0650, 3.4213, 3.4369
+aos  AP:22.75, 15.57, 14.05
+Cyclist AP_R40@0.50, 0.50, 0.50:
+bbox AP:32.0619, 18.7059, 17.7319
+bev  AP:2.7053, 1.5294, 1.3472
+3d   AP:1.6290, 1.0572, 1.0549
+aos  AP:21.76, 12.79, 12.21
+Cyclist AP@0.50, 0.25, 0.25:
+bbox AP:34.1034, 23.8919, 21.4875
+bev  AP:16.2268, 12.4225, 12.2936
+3d   AP:14.4851, 8.5396, 6.8277
+aos  AP:22.75, 15.57, 14.05
+Cyclist AP_R40@0.50, 0.25, 0.25:
+bbox AP:32.0619, 18.7059, 17.7319
+bev  AP:11.1344, 5.7787, 5.5845
+3d   AP:10.0535, 5.1281, 4.6391
+aos  AP:21.76, 12.79, 12.21
+
+2021-10-20 00:14:37,162   INFO  Result is save to /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/eval/eval_with_train/epoch_75/val
+2021-10-20 00:14:37,162   INFO  ****************Evaluation done.*****************
+2021-10-20 00:14:37,200   INFO  Epoch 75 has been evaluated
+2021-10-20 00:14:37,204   INFO  ==> Loading parameters from checkpoint /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_76.pth to CPU
+2021-10-20 00:14:37,820   INFO  ==> Checkpoint trained from version: pcdet+0.3.0+c9d31d3
+2021-10-20 00:14:44,551   INFO  ==> Done (loaded 903/903)
+2021-10-20 00:14:44,612   INFO  *************** EPOCH 76 EVALUATION *****************
+2021-10-20 00:19:51,151   INFO  *************** Performance of EPOCH 76 *****************
+2021-10-20 00:19:51,152   INFO  Generate label finished(sec_per_example: 0.0813 second).
+2021-10-20 00:19:51,152   INFO  recall_roi_0.3: 0.000000
+2021-10-20 00:19:51,152   INFO  recall_rcnn_0.3: 0.518223
+2021-10-20 00:19:51,152   INFO  recall_roi_0.5: 0.000000
+2021-10-20 00:19:51,152   INFO  recall_rcnn_0.5: 0.376025
+2021-10-20 00:19:51,152   INFO  recall_roi_0.7: 0.000000
+2021-10-20 00:19:51,152   INFO  recall_rcnn_0.7: 0.181435
+2021-10-20 00:19:51,155   INFO  Average predicted number of objects(3769 samples): 4.168
+2021-10-20 00:20:09,963   INFO  Car AP@0.70, 0.70, 0.70:
+bbox AP:89.8585, 79.4292, 71.1585
+bev  AP:32.2921, 24.8283, 23.0815
+3d   AP:25.9960, 20.7958, 17.8952
+aos  AP:89.08, 78.22, 69.75
+Car AP_R40@0.70, 0.70, 0.70:
+bbox AP:92.9432, 80.0532, 72.8266
+bev  AP:28.1205, 20.2791, 17.6212
+3d   AP:20.8304, 14.6354, 12.5347
+aos  AP:92.08, 78.76, 71.18
+Car AP@0.70, 0.50, 0.50:
+bbox AP:89.8585, 79.4292, 71.1585
+bev  AP:61.7825, 46.5767, 44.5643
+3d   AP:57.2538, 43.8811, 38.0879
+aos  AP:89.08, 78.22, 69.75
+Car AP_R40@0.70, 0.50, 0.50:
+bbox AP:92.9432, 80.0532, 72.8266
+bev  AP:61.5690, 46.2729, 42.1185
+3d   AP:56.3779, 41.0233, 37.0329
+aos  AP:92.08, 78.76, 71.18
+Pedestrian AP@0.50, 0.50, 0.50:
+bbox AP:46.2450, 38.9989, 32.3936
+bev  AP:19.3495, 15.0600, 14.1884
+3d   AP:16.0401, 14.1608, 12.8201
+aos  AP:35.49, 29.67, 25.16
+Pedestrian AP_R40@0.50, 0.50, 0.50:
+bbox AP:44.3996, 35.7852, 30.6894
+bev  AP:13.8138, 10.3944, 8.3483
+3d   AP:10.9739, 7.9620, 6.3698
+aos  AP:32.33, 25.53, 21.84
+Pedestrian AP@0.50, 0.25, 0.25:
+bbox AP:46.2450, 38.9989, 32.3936
+bev  AP:35.6444, 28.2241, 23.5977
+3d   AP:32.3486, 27.4444, 23.1579
+aos  AP:35.49, 29.67, 25.16
+Pedestrian AP_R40@0.50, 0.25, 0.25:
+bbox AP:44.3996, 35.7852, 30.6894
+bev  AP:31.8340, 24.9184, 19.5317
+3d   AP:30.2125, 23.4124, 18.9658
+aos  AP:32.33, 25.53, 21.84
+Cyclist AP@0.50, 0.50, 0.50:
+bbox AP:33.0888, 23.6470, 21.5457
+bev  AP:4.3492, 3.4598, 3.4749
+3d   AP:4.1043, 3.3958, 3.4111
+aos  AP:24.18, 17.01, 15.70
+Cyclist AP_R40@0.50, 0.50, 0.50:
+bbox AP:30.5733, 18.4912, 17.4538
+bev  AP:2.2658, 1.2575, 1.2887
+3d   AP:1.8214, 1.0299, 1.0351
+aos  AP:22.42, 13.56, 12.83
+Cyclist AP@0.50, 0.25, 0.25:
+bbox AP:33.0888, 23.6470, 21.5457
+bev  AP:15.7720, 12.0567, 11.2727
+3d   AP:15.0249, 11.0865, 11.0889
+aos  AP:24.18, 17.01, 15.70
+Cyclist AP_R40@0.50, 0.25, 0.25:
+bbox AP:30.5733, 18.4912, 17.4538
+bev  AP:10.6453, 5.6035, 5.1857
+3d   AP:9.1081, 4.7681, 4.8090
+aos  AP:22.42, 13.56, 12.83
+
+2021-10-20 00:20:09,964   INFO  Result is save to /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/eval/eval_with_train/epoch_76/val
+2021-10-20 00:20:09,964   INFO  ****************Evaluation done.*****************
+2021-10-20 00:20:09,991   INFO  Epoch 76 has been evaluated
+2021-10-20 00:20:09,992   INFO  ==> Loading parameters from checkpoint /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_77.pth to CPU
+2021-10-20 00:20:10,597   INFO  ==> Checkpoint trained from version: pcdet+0.3.0+c9d31d3
+2021-10-20 00:20:17,327   INFO  ==> Done (loaded 903/903)
+2021-10-20 00:20:17,385   INFO  *************** EPOCH 77 EVALUATION *****************
+2021-10-20 00:25:24,084   INFO  *************** Performance of EPOCH 77 *****************
+2021-10-20 00:25:24,084   INFO  Generate label finished(sec_per_example: 0.0814 second).
+2021-10-20 00:25:24,084   INFO  recall_roi_0.3: 0.000000
+2021-10-20 00:25:24,085   INFO  recall_rcnn_0.3: 0.516344
+2021-10-20 00:25:24,085   INFO  recall_roi_0.5: 0.000000
+2021-10-20 00:25:24,085   INFO  recall_rcnn_0.5: 0.374260
+2021-10-20 00:25:24,085   INFO  recall_roi_0.7: 0.000000
+2021-10-20 00:25:24,085   INFO  recall_rcnn_0.7: 0.179556
+2021-10-20 00:25:24,087   INFO  Average predicted number of objects(3769 samples): 4.098
+2021-10-20 00:25:42,907   INFO  Car AP@0.70, 0.70, 0.70:
+bbox AP:90.0128, 79.5992, 71.3069
+bev  AP:32.3805, 24.8353, 23.1489
+3d   AP:25.5842, 18.8601, 17.7544
+aos  AP:89.12, 78.24, 69.78
+Car AP_R40@0.70, 0.70, 0.70:
+bbox AP:93.2696, 80.2701, 73.0178
+bev  AP:28.0952, 20.2778, 17.5963
+3d   AP:20.0317, 13.8819, 12.3984
+aos  AP:92.26, 78.81, 71.21
+Car AP@0.70, 0.50, 0.50:
+bbox AP:90.0128, 79.5992, 71.3069
+bev  AP:61.8064, 46.4299, 44.4832
+3d   AP:57.3997, 43.8787, 38.0529
+aos  AP:89.12, 78.24, 69.78
+Car AP_R40@0.70, 0.50, 0.50:
+bbox AP:93.2696, 80.2701, 73.0178
+bev  AP:61.7107, 46.2159, 42.0717
+3d   AP:56.5829, 40.9791, 37.0556
+aos  AP:92.26, 78.81, 71.21
+Pedestrian AP@0.50, 0.50, 0.50:
+bbox AP:45.8447, 38.4201, 31.7382
+bev  AP:18.7966, 14.7202, 14.1106
+3d   AP:15.8150, 14.0341, 12.6974
+aos  AP:35.30, 29.27, 24.72
+Pedestrian AP_R40@0.50, 0.50, 0.50:
+bbox AP:43.7497, 35.2979, 29.1116
+bev  AP:13.3404, 9.9145, 8.0875
+3d   AP:11.0566, 7.9288, 6.3746
+aos  AP:32.09, 25.33, 20.91
+Pedestrian AP@0.50, 0.25, 0.25:
+bbox AP:45.8447, 38.4201, 31.7382
+bev  AP:34.7034, 27.6041, 23.1155
+3d   AP:31.8103, 27.1913, 22.8526
+aos  AP:35.30, 29.27, 24.72
+Pedestrian AP_R40@0.50, 0.25, 0.25:
+bbox AP:43.7497, 35.2979, 29.1116
+bev  AP:30.9514, 24.2665, 18.9835
+3d   AP:29.7766, 22.9911, 18.6873
+aos  AP:32.09, 25.33, 20.91
+Cyclist AP@0.50, 0.50, 0.50:
+bbox AP:33.2412, 23.5045, 23.4642
+bev  AP:3.1439, 2.2612, 2.2581
+3d   AP:2.8405, 2.1886, 2.2034
+aos  AP:22.28, 15.63, 15.07
+Cyclist AP_R40@0.50, 0.50, 0.50:
+bbox AP:31.3324, 18.9190, 17.8410
+bev  AP:2.2960, 1.3700, 1.2683
+3d   AP:1.6483, 1.0456, 1.0177
+aos  AP:21.40, 13.13, 12.18
+Cyclist AP@0.50, 0.25, 0.25:
+bbox AP:33.2412, 23.5045, 23.4642
+bev  AP:15.7912, 12.2435, 12.1136
+3d   AP:15.2376, 11.9529, 11.2133
+aos  AP:22.28, 15.63, 15.07
+Cyclist AP_R40@0.50, 0.25, 0.25:
+bbox AP:31.3324, 18.9190, 17.8410
+bev  AP:10.3446, 5.2949, 5.2392
+3d   AP:9.3123, 4.8958, 4.6894
+aos  AP:21.40, 13.13, 12.18
+
+2021-10-20 00:25:42,909   INFO  Result is save to /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/eval/eval_with_train/epoch_77/val
+2021-10-20 00:25:42,909   INFO  ****************Evaluation done.*****************
+2021-10-20 00:25:42,938   INFO  Epoch 77 has been evaluated
+2021-10-20 00:25:42,944   INFO  ==> Loading parameters from checkpoint /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_78.pth to CPU
+2021-10-20 00:25:43,551   INFO  ==> Checkpoint trained from version: pcdet+0.3.0+c9d31d3
+2021-10-20 00:25:50,284   INFO  ==> Done (loaded 903/903)
+2021-10-20 00:25:50,346   INFO  *************** EPOCH 78 EVALUATION *****************
+2021-10-20 00:30:57,049   INFO  *************** Performance of EPOCH 78 *****************
+2021-10-20 00:30:57,049   INFO  Generate label finished(sec_per_example: 0.0814 second).
+2021-10-20 00:30:57,049   INFO  recall_roi_0.3: 0.000000
+2021-10-20 00:30:57,049   INFO  recall_rcnn_0.3: 0.518679
+2021-10-20 00:30:57,049   INFO  recall_roi_0.5: 0.000000
+2021-10-20 00:30:57,049   INFO  recall_rcnn_0.5: 0.376082
+2021-10-20 00:30:57,049   INFO  recall_roi_0.7: 0.000000
+2021-10-20 00:30:57,049   INFO  recall_rcnn_0.7: 0.181093
+2021-10-20 00:30:57,052   INFO  Average predicted number of objects(3769 samples): 4.174
+2021-10-20 00:31:15,933   INFO  Car AP@0.70, 0.70, 0.70:
+bbox AP:89.9168, 79.5320, 71.2144
+bev  AP:32.2740, 24.9292, 23.0825
+3d   AP:25.7091, 20.6021, 17.7922
+aos  AP:89.00, 78.24, 69.73
+Car AP_R40@0.70, 0.70, 0.70:
+bbox AP:92.9704, 80.1145, 72.8696
+bev  AP:28.2781, 20.2845, 17.6100
+3d   AP:20.2655, 14.5470, 12.3865
+aos  AP:91.96, 78.74, 71.15
+Car AP@0.70, 0.50, 0.50:
+bbox AP:89.9168, 79.5320, 71.2144
+bev  AP:62.1922, 46.6324, 44.6542
+3d   AP:57.0767, 43.8784, 38.1156
+aos  AP:89.00, 78.24, 69.73
+Car AP_R40@0.70, 0.50, 0.50:
+bbox AP:92.9704, 80.1145, 72.8696
+bev  AP:61.9280, 46.4120, 42.2493
+3d   AP:56.3861, 41.0557, 37.0596
+aos  AP:91.96, 78.74, 71.15
+Pedestrian AP@0.50, 0.50, 0.50:
+bbox AP:46.5735, 38.7887, 32.3426
+bev  AP:18.7714, 14.6217, 13.9739
+3d   AP:15.9034, 13.7847, 12.5217
+aos  AP:35.36, 29.54, 25.19
+Pedestrian AP_R40@0.50, 0.50, 0.50:
+bbox AP:44.4272, 35.7153, 29.5270
+bev  AP:13.3089, 9.7611, 7.9537
+3d   AP:10.7008, 7.6335, 6.3060
+aos  AP:32.15, 25.33, 20.98
+Pedestrian AP@0.50, 0.25, 0.25:
+bbox AP:46.5735, 38.7887, 32.3426
+bev  AP:35.0892, 28.0230, 23.0610
+3d   AP:34.9145, 27.7771, 22.8783
+aos  AP:35.36, 29.54, 25.19
+Pedestrian AP_R40@0.50, 0.25, 0.25:
+bbox AP:44.4272, 35.7153, 29.5270
+bev  AP:31.4185, 24.4979, 19.2731
+3d   AP:31.2797, 23.4587, 19.0530
+aos  AP:32.15, 25.33, 20.98
+Cyclist AP@0.50, 0.50, 0.50:
+bbox AP:34.9023, 24.5174, 24.1369
+bev  AP:4.5102, 3.4378, 3.4528
+3d   AP:4.3290, 3.4366, 3.4538
+aos  AP:26.45, 18.38, 18.32
+Cyclist AP_R40@0.50, 0.50, 0.50:
+bbox AP:32.8086, 20.1398, 18.9647
+bev  AP:2.4135, 1.3111, 1.3554
+3d   AP:2.0297, 1.1581, 1.1822
+aos  AP:24.81, 15.04, 14.35
+Cyclist AP@0.50, 0.25, 0.25:
+bbox AP:34.9023, 24.5174, 24.1369
+bev  AP:16.0476, 12.5647, 11.4319
+3d   AP:14.1138, 7.8205, 7.0037
+aos  AP:26.45, 18.38, 18.32
+Cyclist AP_R40@0.50, 0.25, 0.25:
+bbox AP:32.8086, 20.1398, 18.9647
+bev  AP:11.3435, 5.8493, 5.3297
+3d   AP:9.7090, 5.1016, 4.8890
+aos  AP:24.81, 15.04, 14.35
+
+2021-10-20 00:31:15,935   INFO  Result is save to /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/eval/eval_with_train/epoch_78/val
+2021-10-20 00:31:15,935   INFO  ****************Evaluation done.*****************
+2021-10-20 00:31:15,976   INFO  Epoch 78 has been evaluated
+2021-10-20 00:31:15,981   INFO  ==> Loading parameters from checkpoint /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_79.pth to CPU
+2021-10-20 00:31:16,615   INFO  ==> Checkpoint trained from version: pcdet+0.3.0+c9d31d3
+2021-10-20 00:31:23,280   INFO  ==> Done (loaded 903/903)
+2021-10-20 00:31:23,339   INFO  *************** EPOCH 79 EVALUATION *****************
+2021-10-20 00:36:29,922   INFO  *************** Performance of EPOCH 79 *****************
+2021-10-20 00:36:29,923   INFO  Generate label finished(sec_per_example: 0.0813 second).
+2021-10-20 00:36:29,923   INFO  recall_roi_0.3: 0.000000
+2021-10-20 00:36:29,923   INFO  recall_rcnn_0.3: 0.510877
+2021-10-20 00:36:29,923   INFO  recall_roi_0.5: 0.000000
+2021-10-20 00:36:29,923   INFO  recall_rcnn_0.5: 0.369875
+2021-10-20 00:36:29,923   INFO  recall_roi_0.7: 0.000000
+2021-10-20 00:36:29,923   INFO  recall_rcnn_0.7: 0.176253
+2021-10-20 00:36:29,926   INFO  Average predicted number of objects(3769 samples): 4.323
+2021-10-20 00:36:48,755   INFO  Car AP@0.70, 0.70, 0.70:
+bbox AP:90.0941, 79.5789, 71.3190
+bev  AP:32.4455, 25.0346, 22.9726
+3d   AP:25.7532, 18.8853, 17.8542
+aos  AP:89.16, 78.26, 69.78
+Car AP_R40@0.70, 0.70, 0.70:
+bbox AP:92.8986, 80.0399, 72.8104
+bev  AP:28.4532, 20.3631, 17.6157
+3d   AP:20.3544, 13.9960, 12.3503
+aos  AP:91.87, 78.63, 71.03
+Car AP@0.70, 0.50, 0.50:
+bbox AP:90.0941, 79.5789, 71.3190
+bev  AP:62.1140, 46.6186, 44.5007
+3d   AP:56.6728, 43.8601, 38.0795
+aos  AP:89.16, 78.26, 69.78
+Car AP_R40@0.70, 0.50, 0.50:
+bbox AP:92.8986, 80.0399, 72.8104
+bev  AP:61.7084, 46.3323, 42.0882
+3d   AP:55.4781, 40.9231, 36.9035
+aos  AP:91.87, 78.63, 71.03
+Pedestrian AP@0.50, 0.50, 0.50:
+bbox AP:45.9888, 38.2394, 31.9640
+bev  AP:18.5560, 14.5833, 13.8907
+3d   AP:16.0971, 13.8269, 12.3091
+aos  AP:35.49, 29.61, 24.98
+Pedestrian AP_R40@0.50, 0.50, 0.50:
+bbox AP:43.0100, 34.2126, 29.2062
+bev  AP:13.1130, 9.6232, 7.7716
+3d   AP:10.8048, 7.6858, 6.2530
+aos  AP:31.65, 24.86, 21.08
+Pedestrian AP@0.50, 0.25, 0.25:
+bbox AP:45.9888, 38.2394, 31.9640
+bev  AP:36.1012, 28.2804, 23.5591
+3d   AP:32.3216, 27.8458, 23.2221
+aos  AP:35.49, 29.61, 24.98
+Pedestrian AP_R40@0.50, 0.25, 0.25:
+bbox AP:43.0100, 34.2126, 29.2062
+bev  AP:32.1757, 24.9468, 19.6093
+3d   AP:30.6933, 23.4664, 19.1170
+aos  AP:31.65, 24.86, 21.08
+Cyclist AP@0.50, 0.50, 0.50:
+bbox AP:34.1232, 24.0188, 23.5928
+bev  AP:4.3630, 3.4366, 3.4585
+3d   AP:2.2957, 1.7203, 1.5496
+aos  AP:24.11, 17.10, 16.30
+Cyclist AP_R40@0.50, 0.50, 0.50:
+bbox AP:32.0724, 19.6629, 18.7696
+bev  AP:2.3739, 1.2754, 1.3626
+3d   AP:1.6705, 0.9015, 0.8281
+aos  AP:22.77, 13.99, 13.10
+Cyclist AP@0.50, 0.25, 0.25:
+bbox AP:34.1232, 24.0188, 23.5928
+bev  AP:15.8861, 12.4362, 12.1708
+3d   AP:12.8672, 7.8957, 7.3838
+aos  AP:24.11, 17.10, 16.30
+Cyclist AP_R40@0.50, 0.25, 0.25:
+bbox AP:32.0724, 19.6629, 18.7696
+bev  AP:10.9194, 5.8502, 5.7268
+3d   AP:9.3860, 5.0689, 4.8763
+aos  AP:22.77, 13.99, 13.10
+
+2021-10-20 00:36:48,757   INFO  Result is save to /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/eval/eval_with_train/epoch_79/val
+2021-10-20 00:36:48,757   INFO  ****************Evaluation done.*****************
+2021-10-20 00:36:48,798   INFO  Epoch 79 has been evaluated
+2021-10-20 00:36:48,801   INFO  ==> Loading parameters from checkpoint /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_80.pth to CPU
+2021-10-20 00:36:49,404   INFO  ==> Checkpoint trained from version: pcdet+0.3.0+c9d31d3
+2021-10-20 00:36:56,139   INFO  ==> Done (loaded 903/903)
+2021-10-20 00:36:56,199   INFO  *************** EPOCH 80 EVALUATION *****************
+2021-10-20 00:42:02,603   INFO  *************** Performance of EPOCH 80 *****************
+2021-10-20 00:42:02,603   INFO  Generate label finished(sec_per_example: 0.0813 second).
+2021-10-20 00:42:02,603   INFO  recall_roi_0.3: 0.000000
+2021-10-20 00:42:02,603   INFO  recall_rcnn_0.3: 0.512756
+2021-10-20 00:42:02,604   INFO  recall_roi_0.5: 0.000000
+2021-10-20 00:42:02,604   INFO  recall_rcnn_0.5: 0.373690
+2021-10-20 00:42:02,604   INFO  recall_roi_0.7: 0.000000
+2021-10-20 00:42:02,604   INFO  recall_rcnn_0.7: 0.182289
+2021-10-20 00:42:02,606   INFO  Average predicted number of objects(3769 samples): 4.001
+2021-10-20 00:42:20,985   INFO  
+Car AP@0.70, 0.70, 0.70:
+bbox AP:90.1764, 79.8497, 71.4529
+bev  AP:32.6862, 25.0245, 23.2205
+3d   AP:25.9577, 20.9112, 17.9994
+aos  AP:89.28, 78.48, 69.88
+Car AP_R40@0.70, 0.70, 0.70:
+bbox AP:93.4976, 80.5026, 73.2281
+bev  AP:28.2446, 20.4152, 18.4591
+3d   AP:20.4849, 14.7940, 12.5922
+aos  AP:92.47, 79.04, 71.40
+Car AP@0.70, 0.50, 0.50:
+bbox AP:90.1764, 79.8497, 71.4529
+bev  AP:61.9655, 46.5408, 45.0027
+3d   AP:57.3277, 43.9183, 38.2080
+aos  AP:89.28, 78.48, 69.88
+Car AP_R40@0.70, 0.50, 0.50:
+bbox AP:93.4976, 80.5026, 73.2281
+bev  AP:61.9122, 46.5073, 42.4080
+3d   AP:55.5455, 41.1666, 37.1961
+aos  AP:92.47, 79.04, 71.40
+
+
+Pedestrian AP@0.50, 0.50, 0.50:
+bbox AP:46.8936, 39.0107, 32.3211
+bev  AP:18.7768, 14.6804, 13.9024
+3d   AP:15.6651, 13.9580, 12.6326
+aos  AP:35.88, 29.62, 25.12
+Pedestrian AP_R40@0.50, 0.50, 0.50:
+bbox AP:44.6204, 35.7914, 30.7078
+bev  AP:13.2646, 9.7417, 8.0142
+3d   AP:10.8972, 7.7999, 6.2770
+aos  AP:32.57, 25.74, 21.82
+Pedestrian AP@0.50, 0.25, 0.25:
+bbox AP:46.8936, 39.0107, 32.3211
+bev  AP:35.2703, 28.3423, 23.2697
+3d   AP:34.7566, 27.5153, 22.8531
+aos  AP:35.88, 29.62, 25.12
+Pedestrian AP_R40@0.50, 0.25, 0.25:
+bbox AP:44.6204, 35.7914, 30.7078
+bev  AP:31.7811, 24.8036, 20.2510
+3d   AP:30.8588, 23.2693, 18.8403
+aos  AP:32.57, 25.74, 21.82
+
+Cyclist AP@0.50, 0.50, 0.50:
+bbox AP:35.6075, 24.6379, 24.2479
+bev  AP:5.0387, 3.7786, 3.5406
+3d   AP:2.6566, 1.9269, 2.0599
+aos  AP:24.17, 16.62, 15.99
+Cyclist AP_R40@0.50, 0.50, 0.50:
+bbox AP:33.1844, 20.3269, 19.1812
+bev  AP:2.9650, 1.6293, 1.6279
+3d   AP:1.7726, 1.1145, 1.1235
+aos  AP:22.80, 14.00, 13.14
+Cyclist AP@0.50, 0.25, 0.25:
+bbox AP:35.6075, 24.6379, 24.2479
+bev  AP:16.1459, 12.4114, 12.3154
+3d   AP:14.0789, 9.4147, 8.7290
+aos  AP:24.17, 16.62, 15.99
+Cyclist AP_R40@0.50, 0.25, 0.25:
+bbox AP:33.1844, 20.3269, 19.1812
+bev  AP:11.4936, 6.1085, 5.7642
+3d   AP:10.2492, 5.3390, 5.2246
+aos  AP:22.80, 14.00, 13.14
+
+2021-10-20 00:42:20,987   INFO  Result is save to /mnt/sda/kypark/OpenPCDet/output/cfgs/kitti_models/CaDDN/default/eval/eval_with_train/epoch_80/val
+2021-10-20 00:42:20,987   INFO  ****************Evaluation done.*****************
+2021-10-20 00:42:21,019   INFO  Epoch 80 has been evaluated
+2021-10-20 00:42:51,054   INFO  **********************End evaluation cfgs/kitti_models/CaDDN(default)**********************

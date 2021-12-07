@@ -63,6 +63,26 @@ def eval_one_epoch(cfg, model, dataloader, epoch_id, logger, dist_test=False, sa
             output_path=final_output_dir if save_to_file else None
         )
         det_annos += annos
+        # for frame_id in range(len(batch_dict['frame_id'])):
+
+        #     index = batch_dict['frame_id'][frame_id]
+        #     for ano_ in range(len(annos[frame_id]['name'])):
+        #         cls_name = annos[frame_id]['name'][ano_]
+        #         trunc = annos[frame_id]['truncated'][ano_]
+        #         occ = annos[frame_id]['occluded'][ano_]
+        #         alpha = annos[frame_id]['alpha'][ano_]
+        #         bbox = annos[frame_id]['bbox'][ano_]
+        #         dim = annos[frame_id]['dimensions'][ano_]
+        #         loc = annos[frame_id]['location'][ano_]
+        #         rot_y = annos[frame_id]['rotation_y'][ano_]
+        #         score = annos[frame_id]['score'][ano_]
+        #         label_ = cls_name + ' ' + str(trunc) + ' ' + str(occ) + ' ' + str(alpha) + ' ' + str(bbox[0]) + ' ' + str(bbox[1]) + ' ' + str(bbox[2]) + ' ' + str(bbox[3])\
+        #              + ' ' + str(dim[1]) + ' ' + str(dim[2]) + ' ' + str(dim[0]) + ' ' + str(loc[0]) + ' ' + str(loc[1]) + ' ' + str(loc[2]) + ' ' + str(rot_y) + ' ' + str(score)
+                
+        #         with open(f'labels/{index}.txt','a') as f:
+        #             f.write(label_)
+        #             f.write('\n')
+
         if cfg.LOCAL_RANK == 0:
             progress_bar.set_postfix(disp_dict)
             progress_bar.update()

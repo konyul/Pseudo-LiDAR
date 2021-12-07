@@ -2,7 +2,7 @@ import numpy as np
 import torch.nn as nn
 
 from .anchor_head_template import AnchorHeadTemplate
-
+from ...utils import box_coder_utils, common_utils, loss_utils
 
 class AnchorHeadSingle(AnchorHeadTemplate):
     def __init__(self, model_cfg, input_channels, num_class, class_names, grid_size, point_cloud_range,

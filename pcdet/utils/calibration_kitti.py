@@ -123,3 +123,22 @@ class Calibration(object):
         boxes_corner = np.concatenate((x.reshape(-1, 8, 1), y.reshape(-1, 8, 1)), axis=2)
 
         return boxes, boxes_corner
+    @staticmethod
+    def cart_to_hom_liga(pts):
+        """
+        :param pts: (N, 3 or 2)
+        :return pts_hom: (N, 4 or 3)
+        """
+        pts_hom = np.hstack(
+            (pts, np.ones((pts.shape[0], 1), dtype=np.float32)))
+        return pts_hom
+
+    @staticmethod
+    def lidar_pseudo_to_rect_liga(pts_lidar):
+        pts_lidar_hom = Calibration.cart_to_hom_liga(pts_lidar)
+        T = np.array([[0, 0, 1],
+                      [-1, 0, 0],
+                      [0, -1, 0],
+                      [0, 0, 0]], dtype=np.float32)
+        pts_rect = np.dot(pts_lidar_hom, T)
+        return pts_rect

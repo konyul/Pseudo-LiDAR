@@ -1,0 +1,75 @@
+// {
+//     // Use IntelliSense to learn about possible attributes.
+//     // Hover to view descriptions of existing attributes.
+//     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+//     "version": "0.2.0",
+//     "configurations": [
+//         {
+//             "name": "Python: Current File",
+//             "type": "python",
+//             "request": "launch",
+//             "program": "tools/train.py",
+//             "console": "integratedTerminal",
+//             "env":{"CUDA_VISIBLE_DEVICES":"0"},
+//             "args":["--cfg_file","tools/cfgs/kitti_models/CaDDN.yaml"]
+//             //"justMyCode": false
+//         }
+//     ]
+// }
+
+// {
+//     // Use IntelliSense to learn about possible attributes.
+//     // Hover to view descriptions of existing attributes.
+//     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+//     "version": "0.2.0",
+//     "configurations": [
+//         {
+//             "name": "Python: Current File",
+//             "type": "python",
+//             "request": "launch",
+//             "program": "tools/train.py",
+//             "console": "integratedTerminal",
+//             "env":{"CUDA_VISIBLE_DEVICES":"1"},
+//             "args":["--cfg_file","tools/cfgs/kitti_models/pointpillar.yaml"],
+//             "justMyCode": false
+//         }
+//     ]
+// }
+// {
+//     // Use IntelliSense to learn about possible attributes.
+//     // Hover to view descriptions of existing attributes.
+//     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+//     "version": "0.2.0",
+//     "configurations": [
+//         {
+//             "name": "Python: Current File",
+//             "type": "python",
+//             "request": "launch",
+//             // "program": "tools/train.py",
+//             "console": "integratedTerminal",
+//             "module":"torch.distributed.launch",
+//             "env":{"CUDA_VISIBLE_DEVICES":"0,1"},
+//             "args":["--nproc_per_node=2","tools/test.py","--launcher","pytorch","--cfg_file","tools/cfgs/kitti_models/CaDDN.yaml","--ckpt","baseline/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_73.pth"]
+//             //"justMyCode": false
+//         }
+//     ]
+// }
+
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "tools/test.py",
+            "console": "integratedTerminal",
+            "env":{"CUDA_VISIBLE_DEVICES":"0"},
+            "args":["--cfg_file","tools/cfgs/kitti_models/CaDDN.yaml","--ckpt","baseline/cfgs/kitti_models/CaDDN/default/ckpt/checkpoint_epoch_73.pth"]
+            //"justMyCode": false
+        }
+    ]
+}

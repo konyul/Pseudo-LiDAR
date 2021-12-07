@@ -3,7 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .vfe_template import VFETemplate
+from functools import partial
 
+import numpy as np
 
 class PFNLayer(nn.Module):
     def __init__(self,

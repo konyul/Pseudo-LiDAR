@@ -139,7 +139,7 @@ def main():
 
     model.train()  # before wrap to DistributedDataParallel to support fixed some parameters
     if dist_train:
-        model = nn.parallel.DistributedDataParallel(model, device_ids=[cfg.LOCAL_RANK % torch.cuda.device_count()])
+        model = nn.parallel.DistributedDataParallel(model, device_ids=[cfg.LOCAL_RANK % torch.cuda.device_count()], find_unused_parameters=True)
     logger.info(model)
 
     lr_scheduler, lr_warmup_scheduler = build_scheduler(
@@ -183,7 +183,7 @@ def main():
     )
     eval_output_dir = output_dir / 'eval' / 'eval_with_train'
     eval_output_dir.mkdir(parents=True, exist_ok=True)
-    args.start_epoch = max(args.epochs - 10, 0)  # Only evaluate the last 10 epochs
+    args.start_epoch = max(args.epochs - 20, 0)  # Only evaluate the last 10 epochs
 
     repeat_eval_ckpt(
         model.module if dist_train else model,
@@ -195,4 +195,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    with torch.autograd.set_detect_anomaly(True):
+        main()

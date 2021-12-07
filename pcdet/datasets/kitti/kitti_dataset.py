@@ -1,6 +1,6 @@
 import copy
 import pickle
-
+from collections import defaultdict
 import numpy as np
 from skimage import io
 
@@ -8,7 +8,7 @@ from . import kitti_utils
 from ...ops.roiaware_pool3d import roiaware_pool3d_utils
 from ...utils import box_utils, calibration_kitti, common_utils, object3d_kitti
 from ..dataset import DatasetTemplate
-
+from ..augmentor.data_augmentor import DataAugmentor ,DataAugmentor_liga
 
 class KittiDataset(DatasetTemplate):
     def __init__(self, dataset_cfg, class_names, training=True, root_path=None, logger=None):
@@ -466,7 +466,315 @@ def create_kitti_infos(dataset_cfg, class_names, data_path, save_path, workers=4
 
     print('---------------Data preparation Done---------------')
 
+class KittiligaDataset(KittiDataset):
+    def __init__(self, dataset_cfg, class_names, training=True, root_path=None, logger=None):
+        """
+        Args:
+            root_path:
+            dataset_cfg:
+            class_names:
+            training:
+            logger:
+        """
+        super().__init__(
+            dataset_cfg=dataset_cfg, class_names=class_names, training=training, root_path=root_path, logger=logger
+        )
+        self.split = self.dataset_cfg.DATA_SPLIT[self.mode]
+        self.root_split_path = self.root_path / ('training' if self.split != 'test' else 'testing')
 
+        split_dir = self.root_path / 'ImageSets' / (self.split + '.txt')
+        self.sample_id_list = [x.strip() for x in open(split_dir).readlines()] if split_dir.exists() else None
+
+        self.kitti_infos = []
+        self.include_kitti_data(self.mode)
+        self.data_augmentor = DataAugmentor_liga(
+            self.root_path, self.dataset_cfg.DATA_AUGMENTOR, self.class_names, logger=self.logger
+        ) if self.training else None
+    def prepare_data(self, data_dict):
+        """
+        Args:
+            data_dict:
+                points: optional, (N, 3 + C_in)
+                gt_boxes: optional, (N, 7 + C) [x, y, z, dx, dy, dz, heading, ...]
+                gt_names: optional, (N), string
+                ...
+
+        Returns:
+            data_dict:
+                frame_id: string
+                points: (N, 3 + C_in)
+                gt_boxes: optional, (N, 7 + C) [x, y, z, dx, dy, dz, heading, ...]
+                gt_names: optional, (N), string
+                use_lead_xyz: bool
+                voxels: optional (num_voxels, max_points_per_voxel, 3 + C)
+                voxel_coords: optional (num_voxels, 3)
+                voxel_num_points: optional (num_voxels)
+                ...
+        """
+        if self.training:
+            assert 'gt_boxes' in data_dict, 'gt_boxes should be provided for training'
+            gt_boxes_mask = np.array([n in self.class_names for n in data_dict['gt_names']], dtype=np.bool_)
+
+            data_dict = self.data_augmentor.forward(
+                data_dict={
+                    **data_dict,
+                    'gt_boxes_mask': gt_boxes_mask
+                }
+            )
+
+        if data_dict.get('gt_boxes', None) is not None:
+            selected = common_utils.keep_arrays_by_name(data_dict['gt_names'], self.class_names)
+            data_dict['gt_boxes'] = data_dict['gt_boxes'][selected]
+            data_dict['gt_names'] = data_dict['gt_names'][selected]
+            gt_classes = np.array([self.class_names.index(n) + 1 for n in data_dict['gt_names']], dtype=np.int32)
+            gt_boxes = np.concatenate((data_dict['gt_boxes'], gt_classes.reshape(-1, 1).astype(np.float32)), axis=1)
+            data_dict['gt_boxes'] = gt_boxes
+
+            if data_dict.get('gt_boxes2d', None) is not None:
+                data_dict['gt_boxes2d'] = data_dict['gt_boxes2d'][selected]
+
+            if 'gt_boxes_no3daug' not in data_dict:
+                data_dict['gt_boxes_no3daug'] = data_dict['gt_boxes'].copy()
+            data_dict['gt_boxes_no3daug'] = np.concatenate(
+                (data_dict['gt_boxes_no3daug'], gt_classes.reshape(-1, 1).astype(np.float32)), axis=1)
+
+        image_shape = data_dict['images'].shape[:2]
+        if 'gt_boxes' in data_dict:
+            gt_boxes_no3daug = data_dict['gt_boxes_no3daug']
+            gt_boxes_no3daug_cam = box_utils.boxes3d_lidar_to_kitti_camera(gt_boxes_no3daug, None, pseudo_lidar=True)
+            data_dict['gt_centers_2d'] = box_utils.boxes3d_kitti_camera_to_imagecenters(
+                gt_boxes_no3daug_cam, data_dict['calib'], image_shape)
+
+        if data_dict.get('points', None) is not None:
+            data_dict = self.point_feature_encoder.forward(data_dict)
+
+        data_dict = self.data_processor.forward(
+            data_dict=data_dict
+        )
+
+        if self.training and len(data_dict['gt_boxes']) == 0:
+            new_index = np.random.randint(self.__len__())
+            return self.__getitem__(new_index)
+
+        data_dict.pop('gt_names', None)
+
+        return data_dict
+
+    @staticmethod
+    def collate_batch(batch_list, _unused=False):
+        data_dict = defaultdict(list)
+        for cur_sample in batch_list:
+            for key, val in cur_sample.items():
+                data_dict[key].append(val)
+        batch_size = len(batch_list)
+        ret = {}
+
+        for key, val in data_dict.items():
+            try:
+                if key in ['voxels', 'voxel_num_points']:
+                    ret[key] = np.concatenate(val, axis=0)
+                elif key in ['points', 'voxel_coords']:
+                    coors = []
+                    for i, coor in enumerate(val):
+                        coor_pad = np.pad(coor, ((0, 0), (1, 0)), mode='constant', constant_values=i)
+                        coors.append(coor_pad)
+                    ret[key] = np.concatenate(coors, axis=0)
+                elif key in ['gt_boxes' , 'gt_boxes_no3daug', 'gt_centers_2d']:
+                    max_gt = max([len(x) for x in val])
+                    batch_gt_boxes3d = np.zeros((batch_size, max_gt, val[0].shape[-1]), dtype=np.float32)
+                    for k in range(batch_size):
+                        batch_gt_boxes3d[k, :val[k].__len__(), :] = val[k]
+                    ret[key] = batch_gt_boxes3d
+                elif key in ['gt_boxes2d']:
+                    max_boxes = 0
+                    max_boxes = max([len(x) for x in val])
+                    batch_boxes2d = np.zeros((batch_size, max_boxes, val[0].shape[-1]), dtype=np.float32)
+                    for k in range(batch_size):
+                        if val[k].size > 0:
+                            batch_boxes2d[k, :val[k].__len__(), :] = val[k]
+                    ret[key] = batch_boxes2d
+                elif key in ["images", "depth_maps"]:
+                    # Get largest image size (H, W)
+                    max_h = 0
+                    max_w = 0
+                    for image in val:
+                        max_h = max(max_h, image.shape[0])
+                        max_w = max(max_w, image.shape[1])
+
+                    # Change size of images
+                    images = []
+                    for image in val:
+                        pad_h = common_utils.get_pad_params(desired_size=max_h, cur_size=image.shape[0])
+                        pad_w = common_utils.get_pad_params(desired_size=max_w, cur_size=image.shape[1])
+                        pad_width = (pad_h, pad_w)
+                        # Pad with nan, to be replaced later in the pipeline.
+                        pad_value = np.nan
+
+                        if key == "images":
+                            pad_width = (pad_h, pad_w, (0, 0))
+                        elif key == "depth_maps":
+                            pad_width = (pad_h, pad_w)
+
+                        image_pad = np.pad(image,
+                                           pad_width=pad_width,
+                                           mode='constant',
+                                           constant_values=pad_value)
+
+                        images.append(image_pad)
+                    ret[key] = np.stack(images, axis=0)
+                else:
+                    ret[key] = np.stack(val, axis=0)
+            except:
+                print('Error in collate_batch: key=%s' % key)
+                raise TypeError
+
+        ret['batch_size'] = batch_size
+        return ret
+    @staticmethod
+    def generate_prediction_dicts(batch_dict, pred_dicts, class_names, output_path=None):
+        """
+        Args:
+            batch_dict:
+                frame_id:
+            pred_dicts: list of pred_dicts
+                pred_boxes: (N, 7), Tensor
+                pred_scores: (N), Tensor
+                pred_labels: (N), Tensor
+            class_names:
+            output_path:
+
+        Returns:
+
+        """
+        def get_template_prediction(num_samples):
+            ret_dict = {
+                'name': np.zeros(num_samples), 'truncated': np.zeros(num_samples),
+                'occluded': np.zeros(num_samples), 'alpha': np.zeros(num_samples),
+                'bbox': np.zeros([num_samples, 4]), 'dimensions': np.zeros([num_samples, 3]),
+                'location': np.zeros([num_samples, 3]), 'rotation_y': np.zeros(num_samples),
+                'score': np.zeros(num_samples), 'boxes_lidar': np.zeros([num_samples, 7])
+            }
+            return ret_dict
+
+        def generate_single_sample_dict(batch_index, box_dict):
+            pred_scores = box_dict['pred_scores'].cpu().numpy()
+            pred_boxes = box_dict['pred_boxes'].cpu().numpy()
+            pred_labels = box_dict['pred_labels'].cpu().numpy()
+            pred_dict = get_template_prediction(pred_scores.shape[0])
+            if pred_scores.shape[0] == 0:
+                return pred_dict
+
+            calib = batch_dict['calib'][batch_index]
+            image_shape = batch_dict['image_shape'][batch_index].cpu().numpy()
+            pred_boxes_camera = box_utils.boxes3d_lidar_to_kitti_camera_liga(pred_boxes, calib)
+            pred_boxes_img = box_utils.boxes3d_kitti_camera_to_imageboxes(
+                pred_boxes_camera, calib, image_shape=image_shape
+            )
+
+            pred_dict['name'] = np.array(class_names)[pred_labels - 1]
+            pred_dict['alpha'] = -np.arctan2(-pred_boxes[:, 1], pred_boxes[:, 0]) + pred_boxes_camera[:, 6]
+            pred_dict['bbox'] = pred_boxes_img
+            pred_dict['dimensions'] = pred_boxes_camera[:, 3:6]
+            pred_dict['location'] = pred_boxes_camera[:, 0:3]
+            pred_dict['rotation_y'] = pred_boxes_camera[:, 6]
+            pred_dict['score'] = pred_scores
+            pred_dict['boxes_lidar'] = pred_boxes
+
+            return pred_dict
+
+        annos = []
+        for index, box_dict in enumerate(pred_dicts):
+            frame_id = batch_dict['frame_id'][index]
+
+            single_pred_dict = generate_single_sample_dict(index, box_dict)
+            single_pred_dict['frame_id'] = frame_id
+            annos.append(single_pred_dict)
+
+            if output_path is not None:
+                cur_det_file = output_path / ('%s.txt' % frame_id)
+                with open(cur_det_file, 'w') as f:
+                    bbox = single_pred_dict['bbox']
+                    loc = single_pred_dict['location']
+                    dims = single_pred_dict['dimensions']  # lhw -> hwl
+
+                    for idx in range(len(bbox)):
+                        print('%s -1 -1 %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f'
+                              % (single_pred_dict['name'][idx], single_pred_dict['alpha'][idx],
+                                 bbox[idx][0], bbox[idx][1], bbox[idx][2], bbox[idx][3],
+                                 dims[idx][1], dims[idx][2], dims[idx][0], loc[idx][0],
+                                 loc[idx][1], loc[idx][2], single_pred_dict['rotation_y'][idx],
+                                 single_pred_dict['score'][idx]), file=f)
+
+        return annos
+    def prepare_data(self, data_dict):
+        """
+        Args:
+            data_dict:
+                points: optional, (N, 3 + C_in)
+                gt_boxes: optional, (N, 7 + C) [x, y, z, dx, dy, dz, heading, ...]
+                gt_names: optional, (N), string
+                ...
+
+        Returns:
+            data_dict:
+                frame_id: string
+                points: (N, 3 + C_in)
+                gt_boxes: optional, (N, 7 + C) [x, y, z, dx, dy, dz, heading, ...]
+                gt_names: optional, (N), string
+                use_lead_xyz: bool
+                voxels: optional (num_voxels, max_points_per_voxel, 3 + C)
+                voxel_coords: optional (num_voxels, 3)
+                voxel_num_points: optional (num_voxels)
+                ...
+        """
+        if self.training:
+            assert 'gt_boxes' in data_dict, 'gt_boxes should be provided for training'
+            gt_boxes_mask = np.array([n in self.class_names for n in data_dict['gt_names']], dtype=np.bool_)
+
+            data_dict = self.data_augmentor.forward(
+                data_dict={
+                    **data_dict,
+                    'gt_boxes_mask': gt_boxes_mask
+                }
+            )
+
+        if data_dict.get('gt_boxes', None) is not None:
+            selected = common_utils.keep_arrays_by_name(data_dict['gt_names'], self.class_names)
+            data_dict['gt_boxes'] = data_dict['gt_boxes'][selected]
+            data_dict['gt_names'] = data_dict['gt_names'][selected]
+            gt_classes = np.array([self.class_names.index(n) + 1 for n in data_dict['gt_names']], dtype=np.int32)
+            gt_boxes = np.concatenate((data_dict['gt_boxes'], gt_classes.reshape(-1, 1).astype(np.float32)), axis=1)
+            data_dict['gt_boxes'] = gt_boxes
+
+            if data_dict.get('gt_boxes2d', None) is not None:
+                data_dict['gt_boxes2d'] = data_dict['gt_boxes2d'][selected]
+
+            if 'gt_boxes_no3daug' not in data_dict:
+                data_dict['gt_boxes_no3daug'] = data_dict['gt_boxes'].copy()
+            data_dict['gt_boxes_no3daug'] = np.concatenate(
+                (data_dict['gt_boxes_no3daug'], gt_classes.reshape(-1, 1).astype(np.float32)), axis=1)
+
+        image_shape = data_dict['images'].shape[:2]
+        if 'gt_boxes' in data_dict:
+            gt_boxes_no3daug = data_dict['gt_boxes_no3daug']
+            gt_boxes_no3daug_cam = box_utils.boxes3d_lidar_to_kitti_camera_liga(gt_boxes_no3daug, None, pseudo_lidar=True)
+            data_dict['gt_centers_2d'] = box_utils.boxes3d_kitti_camera_to_imagecenters(
+                gt_boxes_no3daug_cam, data_dict['calib'], image_shape)
+
+        if data_dict.get('points', None) is not None:
+            data_dict = self.point_feature_encoder.forward(data_dict)
+
+        data_dict = self.data_processor.forward(
+            data_dict=data_dict
+        )
+
+        if self.training and len(data_dict['gt_boxes']) == 0:
+            new_index = np.random.randint(self.__len__())
+            return self.__getitem__(new_index)
+
+        data_dict.pop('gt_names', None)
+
+        return data_dict
 if __name__ == '__main__':
     import sys
     if sys.argv.__len__() > 1 and sys.argv[1] == 'create_kitti_infos':

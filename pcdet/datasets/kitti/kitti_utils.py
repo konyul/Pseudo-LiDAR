@@ -1,5 +1,6 @@
 import numpy as np
 from ...utils import box_utils
+import torch
 
 
 def transform_annotations_to_kitti_format(annos, map_name_to_kitti=None, info_with_fakelidar=False):
@@ -59,3 +60,51 @@ def calib_to_matricies(calib):
     V2R = R0 @ V2C
     P2 = calib.P2
     return V2R, P2
+
+def project_image_to_cam(points,cam_to_img):
+    ''' Input: nx3 first two channels are uv, 3rd channel
+                   is depth in rect camera coord.
+            Output: nx3 points in rect camera coord.
+        '''
+    c_u = cam_to_img[0, 2]
+    c_v = cam_to_img[1, 2]
+    f_u = cam_to_img[0, 0]
+    f_v = cam_to_img[1, 1]
+    b_x = cam_to_img[0, 3] / (-f_u)  # relative
+    b_y = cam_to_img[1, 3] / (-f_v)
+    
+    x = ((points[:, 0] - c_u) * points[:, 2]) / f_u + b_x
+    y = ((points[:, 1] - c_v) * points[:, 2]) / f_v + b_y
+
+    pts_3d_rect = points.clone()
+    pts_3d_rect[:, 0] = x
+    pts_3d_rect[:, 1] = y
+    #pts_3d_rect[:, 2] = points[:, 2]
+    return pts_3d_rect
+
+def cart2hom(pts_3d):
+        ''' Input: nx3 points in Cartesian
+            Oupput: nx4 points in Homogeneous by pending 1
+        '''
+        n = pts_3d.shape[0]
+        pts_3d_hom = torch.hstack((pts_3d, torch.ones((n, 1)).to(pts_3d.device)))
+        return pts_3d_hom
+
+def inverse_rigid_trans(Tr):
+    ''' Inverse a rigid body transform matrix (3x4 as [R|t])
+        [R'|-R't; 0|1]
+    '''
+    inv_Tr = torch.zeros_like(Tr)  # 3x4
+    inv_Tr[0:3, 0:3] = torch.transpose(Tr[0:3, 0:3],0,1)
+    inv_Tr[0:3, 3] = torch.matmul(-torch.transpose(Tr[0:3, 0:3],0,1), Tr[0:3, 3])
+    return inv_Tr.to(Tr.device)
+
+def project_cam_to_velo(pts_3d_cam, lidar_to_cam):
+    cam_to_lidar = inverse_rigid_trans(lidar_to_cam)
+
+    return torch.transpose(torch.matmul(cam_to_lidar, torch.transpose(cart2hom(pts_3d_cam), 0, 1)), 0, 1)
+
+def project_image_to_velo(points, lidar_to_cam, cam_to_img):
+    pts_3d_cam = project_image_to_cam(points, cam_to_img)
+    return project_cam_to_velo(pts_3d_cam, lidar_to_cam)
+

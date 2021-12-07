@@ -6,7 +6,7 @@ import torch.nn as nn
 from ...ops.iou3d_nms import iou3d_nms_utils
 from .. import backbones_2d, backbones_3d, dense_heads, roi_heads
 from ..backbones_2d import map_to_bev
-from ..backbones_3d import pfe, vfe
+from ..backbones_3d import pfe, vfe, p2v
 from ..model_utils import model_nms_utils
 
 
@@ -20,9 +20,13 @@ class Detector3DTemplate(nn.Module):
         self.register_buffer('global_step', torch.LongTensor(1).zero_())
 
         self.module_topology = [
-            'vfe', 'backbone_3d', 'map_to_bev_module', 'pfe',
+            'vfe', 'backbone_3d', 'p2v', 'vfe_', 'map_to_bev_module', 'pfe',
             'backbone_2d', 'dense_head',  'point_head', 'roi_head'
         ]
+        # self.module_topology = [
+        #     'vfe', 'backbone_3d', 'map_to_bev_module', 'pfe',
+        #     'backbone_2d', 'dense_head_2d', 'dense_head',  'point_head', 'roi_head'
+        # ]
 
     @property
     def mode(self):
@@ -80,6 +84,38 @@ class Detector3DTemplate(nn.Module):
         model_info_dict['backbone_channels'] = backbone_3d_module.backbone_channels \
             if hasattr(backbone_3d_module, 'backbone_channels') else None
         return backbone_3d_module, model_info_dict
+
+    def build_p2v(self, model_info_dict):
+        if self.model_cfg.get('P2V', None) is None:
+            return None, model_info_dict
+
+        p2v_module = p2v.__all__[self.model_cfg.P2V.NAME](
+            model_cfg=self.model_cfg.P2V,
+            # num_point_features=model_info_dict['num_rawpoint_features'],
+            point_cloud_range=model_info_dict['point_cloud_range'],
+            voxel_size=model_info_dict['voxel_size'],
+            grid_size=model_info_dict['grid_size'],
+            depth_downsample_factor=model_info_dict['depth_downsample_factor']
+        )
+        #model_info_dict['num_point_features'] = p2v_module.num_point_features
+        model_info_dict['module_list'].append(p2v_module)
+        return p2v_module, model_info_dict
+
+    def build_vfe_(self, model_info_dict):
+        if self.model_cfg.get('VFE_', None) is None:
+            return None, model_info_dict
+
+        vfe_module = vfe.__all__[self.model_cfg.VFE_.NAME](
+            model_cfg=self.model_cfg.VFE_,
+            num_point_features=model_info_dict['num_rawpoint_features'],
+            point_cloud_range=model_info_dict['point_cloud_range'],
+            voxel_size=self.model_cfg.VFE_.VOXEL_SIZE,
+            grid_size=model_info_dict['grid_size'],
+            depth_downsample_factor=model_info_dict['depth_downsample_factor']
+        )
+        model_info_dict['num_point_features'] = vfe_module.get_output_feature_dim()
+        model_info_dict['module_list'].append(vfe_module)
+        return vfe_module, model_info_dict
 
     def build_map_to_bev_module(self, model_info_dict):
         if self.model_cfg.get('MAP_TO_BEV', None) is None:
@@ -188,7 +224,6 @@ class Detector3DTemplate(nn.Module):
                 roi_labels: (B, num_rois)  1 .. num_classes
                 batch_pred_labels: (B, num_boxes, 1)
         Returns:
-
         """
         post_process_cfg = self.model_cfg.POST_PROCESSING
         batch_size = batch_dict['batch_size']
